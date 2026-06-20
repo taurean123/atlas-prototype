@@ -1,7 +1,7 @@
 # Atlas — Interactive Prototype (Phase 1)
 
 **On-Demand Logistics & Moving Super-App** · Customer · Driver · Admin · Business
-We Are Amnet · Operations · Launch market: Malaysia / SE Asia
+Prototype by Latteri Narayanan · Launch market: Malaysia / SE Asia
 
 This is a **clickable, front-end-only prototype** built for stakeholder review and approval. There is no live backend — the AI Quotation Engine, live tracking, dispatch, and analytics are simulated with realistic demo data so reviewers can walk the full experience on a phone or laptop. Phase 2 is the real build.
 
