@@ -63,6 +63,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 a { color: inherit; text-decoration: none; }
 input, select, textarea { font-family: inherit; font-size: 15px; }
 
+/* Base icon size — any loose inline SVG defaults to a sane size.
+   Intentionally larger/smaller icons override this via more specific
+   selectors or inline styles, so this only catches un-sized icons. */
+svg { width: 20px; height: 20px; flex: 0 0 auto; }
+
 /* ---------- Brand mark ---------- */
 .atlas-logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.5px; }
 .atlas-logo .mark {
@@ -93,6 +98,17 @@ input, select, textarea { font-family: inherit; font-size: 15px; }
 .phone .notch {
   position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
   width: 132px; height: 30px; background: #000; border-radius: 0 0 18px 18px; z-index: 60;
+}
+
+/* On real phones, drop the device frame and run full-screen so the
+   app behaves like a native app and the bottom tab bar is reachable. */
+@media (max-width: 460px) {
+  .device-stage { display: block; min-height: 100dvh; padding: 0; background: var(--bg); }
+  .phone { width: 100%; max-width: 100%; height: 100dvh; max-height: none;
+    border-radius: 0; padding: 0; background: var(--bg); box-shadow: none; }
+  .phone .screen { border-radius: 0; height: 100dvh; }
+  .phone .notch { display: none; }
+  .statusbar { display: none; }   /* avoid double status bar */
 }
 .statusbar {
   height: 44px; flex: 0 0 44px; display: flex; align-items: center; justify-content: space-between;
