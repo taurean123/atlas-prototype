@@ -49,6 +49,7 @@ const ADDONS = [
   { id:'crew',  name:'Manpower (2 movers)',  desc:'Carry, load & unload',      price:90,  ic:'users',  on:true  },
   { id:'ins',   name:'Move insurance',       desc:'Cover up to RM 5,000',      price:35,  ic:'shield', on:true  },
   { id:'store', name:'Short-term storage',   desc:'Per week, climate-controlled',price:200,ic:'home',   on:false },
+  { id:'disp',  name:'Disposal & haulage',   desc:'Haul away unwanted items',  price:80,  ic:'truck',  on:false },
 ];
 
 /* ---------- State ---------- */

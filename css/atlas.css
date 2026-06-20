@@ -262,6 +262,12 @@ svg { width: 20px; height: 20px; flex: 0 0 auto; }
 .steps i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
 .steps i.on { background: var(--atlas-blue); }
 
+/* OTP entry boxes (login) */
+.otp-box { flex: 1; aspect-ratio: 1; max-width: 48px; border-radius: 12px;
+  background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.22);
+  display: grid; place-items: center; font-size: 22px; font-weight: 800; color: #fff; }
+.otp-box.on { border-color: var(--atlas-amber); box-shadow: 0 0 0 3px rgba(255,158,44,.25); }
+
 /* ===================================================================
    WEB DASHBOARD (Admin + Business) shared layout
    =================================================================== */

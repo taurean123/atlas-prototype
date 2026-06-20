@@ -7,7 +7,7 @@
 <title>Atlas — Driver & Mover App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/atlas.css?v=3">
+<link rel="stylesheet" href="../css/atlas.css?v=4">
 <style>
   .driver-top{ background:var(--grad-navy); color:#fff; padding:8px 18px 22px; }
   .online-toggle{ display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16); border-radius:16px; padding:14px 16px; }
@@ -54,8 +54,34 @@
       <div id="sb"></div>
       <div class="app" id="app">
 
+        <!-- =================== DRIVER SIGN-IN =================== -->
+        <section class="view active" id="v-login" style="background:var(--grad-navy); color:#fff">
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding:30px 26px">
+            <div class="atlas-logo" style="margin-bottom:24px">
+              <span class="mark" style="background:linear-gradient(135deg,#18B6A6,#12306E)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
+              <span class="word" style="color:#fff">Atlas <span style="font-weight:600; font-size:14px; opacity:.7">Driver</span></span>
+            </div>
+            <h1 style="font-size:28px; font-weight:800; letter-spacing:-1px; line-height:1.12">Drive. Deliver.<br>Get paid daily.</h1>
+            <p style="opacity:.72; margin:12px 0 24px; font-size:15px">Sign in to your partner account.</p>
+
+            <div class="field" style="background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2)">
+              <span class="b" style="color:#fff">🇲🇾 +60</span>
+              <input inputmode="numeric" placeholder="12 345 6789" style="color:#fff">
+            </div>
+            <button class="btn btn-block btn-lg" style="margin-top:14px; background:var(--atlas-teal); color:#fff" onclick="go('v-home')">Sign in _CHEV_</button>
+
+            <div class="card card-pad" style="margin-top:22px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14)">
+              <div class="b" style="margin-bottom:10px">New partner? Register &amp; verify</div>
+              <div class="row" style="gap:8px; margin-bottom:8px"><span style="color:#7DFAB0">_CHECK_</span><span class="small" style="opacity:.85">Upload licence, vehicle registration &amp; insurance</span></div>
+              <div class="row" style="gap:8px; margin-bottom:8px"><span style="color:#7DFAB0">_CHECK_</span><span class="small" style="opacity:.85">Background check &amp; vehicle approval</span></div>
+              <div class="row" style="gap:8px"><span style="color:#7DFAB0">_CHECK_</span><span class="small" style="opacity:.85">Go online and start earning</span></div>
+              <button class="btn btn-block" style="margin-top:14px; background:rgba(255,255,255,.14); color:#fff" onclick="go('v-home')">Start registration →</button>
+            </div>
+          </div>
+        </section>
+
         <!-- =================== HOME / JOBS =================== -->
-        <section class="view active" id="v-home">
+        <section class="view" id="v-home">
           <div class="driver-top">
             <div class="between" style="margin-bottom:14px">
               <div class="row"><div style="width:42px;height:42px;border-radius:50%;background:var(--grad-brand);display:grid;place-items:center;font-weight:800">F</div>
@@ -270,7 +296,7 @@
   </div>
 </div>
 
-<script src="../js/atlas.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="../js/atlas.js?v=4"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

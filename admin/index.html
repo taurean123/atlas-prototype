@@ -6,7 +6,7 @@
 <title>Atlas — Admin Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/atlas.css?v=3">
+<link rel="stylesheet" href="../css/atlas.css?v=4">
 <style>
   .opsmap{ height:380px; border-radius:14px; }
   .opsmap .label{ position:absolute; background:#fff; border:1px solid var(--line); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; box-shadow:var(--shadow-sm); transform:translate(-50%,-150%); }
@@ -38,6 +38,7 @@
       <a data-p="pricing" onclick="nav('pricing',this)">_CASH_ Pricing</a>
       <a data-p="drivers" onclick="nav('drivers',this)">_USERS_ Driver approval</a>
       <a data-p="fraud" onclick="nav('fraud',this)">_SHIELD_ Fraud queue</a>
+      <a data-p="support" onclick="nav('support',this)">_CHAT_ Support &amp; disputes</a>
       <div class="grp">Insight</div>
       <a data-p="analytics" onclick="nav('analytics',this)">_GRID_ Analytics &amp; AI</a>
     </nav>
@@ -269,6 +270,53 @@
         </div>
       </section>
 
+      <!-- ===== SUPPORT & DISPUTES ===== -->
+      <section class="page" id="p-support">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Open tickets</div><div class="val">34</div><div class="delta down">6 breaching SLA</div></div>
+          <div class="kpi"><div class="lab">Avg first response</div><div class="val">4.2 min</div><div class="delta up">▼ faster</div></div>
+          <div class="kpi"><div class="lab">Open disputes / claims</div><div class="val">9</div><div class="delta">RM 3,180 at stake</div></div>
+          <div class="kpi"><div class="lab">Refunds (today)</div><div class="val">RM 642</div><div class="delta">21 processed</div></div>
+        </div>
+        <div class="grid g-2" style="margin-top:16px">
+          <div class="panel">
+            <div class="ph"><h3>Ticket queue</h3><div class="row"><button class="btn-w">_FILTER_ Filter</button><button class="btn-w primary">Assign</button></div></div>
+            <table class="tbl">
+              <thead><tr><th>Ticket</th><th>Customer</th><th>Order</th><th>Topic</th><th>Priority</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td class="b">#T-4821</td><td>Latteri N.</td><td>#A-90419</td><td>Move running late</td><td><span class="badge danger">High</span></td><td><button class="btn-w dark">Open chat</button></td></tr>
+                <tr><td class="b">#T-4818</td><td>Aishah K.</td><td>#A-90388</td><td>Item damaged in transit</td><td><span class="badge warn">Claim</span></td><td><button class="btn-w dark">Open chat</button></td></tr>
+                <tr><td class="b">#T-4815</td><td>Wei L.</td><td>#A-90377</td><td>Overcharged — surge query</td><td><span class="badge info">Billing</span></td><td><button class="btn-w">Open chat</button></td></tr>
+                <tr><td class="b">#T-4810</td><td>Ramesh P.</td><td>#A-90361</td><td>Driver no-show</td><td><span class="badge warn">Med</span></td><td><button class="btn-w">Open chat</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>Live chat — #T-4821</h3><span class="badge info">Latteri N.</span></div>
+            <div class="pb">
+              <div style="display:flex; flex-direction:column; gap:10px; max-height:230px; overflow:auto">
+                <div style="align-self:flex-start; max-width:80%; background:var(--surface-2); padding:10px 13px; border-radius:12px; font-size:13.5px">Hi, my move driver is 18 minutes late and not answering.</div>
+                <div style="align-self:flex-end; max-width:80%; background:var(--atlas-blue); color:#fff; padding:10px 13px; border-radius:12px; font-size:13.5px">Apologies Latteri — I can see the delay. Reassigning a nearby 1-ton driver now, ETA 7 min.</div>
+                <div style="align-self:flex-start; max-width:80%; background:var(--surface-2); padding:10px 13px; border-radius:12px; font-size:13.5px">Thank you!</div>
+              </div>
+              <div class="field" style="margin-top:12px"><input placeholder="Type a reply…"><button class="btn-w primary" style="height:34px">Send</button></div>
+              <div class="row" style="gap:8px; margin-top:10px"><button class="btn-w">Issue refund</button><button class="btn-w">Reassign driver</button><button class="btn-w dark">Resolve ticket</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Disputes &amp; claims</h3><span class="badge warn">9 open</span></div>
+          <table class="tbl">
+            <thead><tr><th>Claim</th><th>Order</th><th>Type</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="b">#CL-771</td><td>#A-90388</td><td>Damaged goods</td><td>RM 850</td><td><span class="badge warn">Reviewing</span></td><td><button class="btn-w dark">Approve refund</button></td></tr>
+              <tr><td class="b">#CL-768</td><td>#A-90377</td><td>Surge overcharge</td><td>RM 42</td><td><span class="badge info">Investigating</span></td><td><button class="btn-w">Adjust</button></td></tr>
+              <tr><td class="b">#CL-762</td><td>#A-90361</td><td>Service not rendered</td><td>RM 214</td><td><span class="badge danger">Escalated</span></td><td><button class="btn-w dark">Resolve</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- ===== ANALYTICS & AI ===== -->
       <section class="page" id="p-analytics">
         <div class="kpis">
@@ -312,15 +360,15 @@
   </main>
 </div>
 
-<script src="../js/atlas.js?v=3"></script>
+<script src="../js/atlas.js?v=4"></script>
 <script>
   const TOKENS={ _CHART_:'chart',_PIN_:'pin',_TRUCK_:'truck',_CASH_:'cash',_USERS_:'users',_SHIELD_:'shield',_GRID_:'grid',
-    _SEARCH_:'search',_BELL_:'bell',_FILTER_:'filter',_SEND_:'send' };
+    _SEARCH_:'search',_BELL_:'bell',_FILTER_:'filter',_SEND_:'send',_CHAT_:'chat' };
   let html=document.body.innerHTML;
   for(const [k,n] of Object.entries(TOKENS)){ html=html.split(k).join(icon(n)); }
   document.body.innerHTML=html;
 
-  const TITLES={overview:'Overview',orders:'Live orders',dispatch:'Dispatch',pricing:'Pricing',drivers:'Driver approval',fraud:'Fraud queue',analytics:'Analytics & AI'};
+  const TITLES={overview:'Overview',orders:'Live orders',dispatch:'Dispatch',pricing:'Pricing',drivers:'Driver approval',fraud:'Fraud queue',support:'Support & disputes',analytics:'Analytics & AI'};
   function nav(p,el){
     document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
     document.getElementById('p-'+p).classList.add('active');
