@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1F4D">
+<title>Atlas — Customer App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/atlas.css">
+<style>
+  /* customer-specific */
+  .home-hero{ background:var(--grad-navy); color:#fff; padding:6px 18px 26px; border-radius:0 0 26px 26px; }
+  .home-hero .hi{ font-size:14px; color:rgba(255,255,255,.7); }
+  .home-hero .name{ font-size:22px; font-weight:800; letter-spacing:-.4px; }
+  .home-hero .av{ width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.15); display:grid; place-items:center; font-weight:800; }
+  .searchbar{ margin-top:18px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.16); border-radius:14px;
+    padding:13px 14px; display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.85); font-weight:600; font-size:14.5px; }
+  .searchbar svg{ width:18px; height:18px; }
+  .intents{ display:grid; grid-template-columns:repeat(3,1fr); gap:11px; margin:-26px 18px 0; position:relative; z-index:5; }
+  .intent{ background:var(--surface); border-radius:16px; padding:15px 10px; text-align:center; box-shadow:var(--shadow); }
+  .intent .ic{ width:46px; height:46px; border-radius:13px; margin:0 auto 9px; display:grid; place-items:center; }
+  .intent .ic svg{ width:24px; height:24px; color:#fff; }
+  .intent .t{ font-weight:800; font-size:14px; } .intent .s{ font-size:11px; color:var(--ink-3); margin-top:2px; }
+  .i-send{ background:var(--grad-brand);} .i-move{ background:var(--grad-cta);} .i-trans{ background:linear-gradient(135deg,#18B6A6,#12306E);}
+  .promo{ margin:6px 0 0; background:linear-gradient(120deg,#EEF3FF,#F3EEFF); border-radius:16px; padding:16px; display:flex; gap:12px; align-items:center; }
+  .promo .badge-soft{ background:var(--grad-cta); color:#fff; font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; }
+  .addons-row{ display:flex; gap:10px; overflow-x:auto; padding:2px 0 4px; }
+  .addons-row::-webkit-scrollbar{ height:0; }
+  .addon-chip{ flex:0 0 auto; background:var(--surface); border-radius:14px; padding:12px; width:96px; box-shadow:var(--shadow-sm); text-align:center; }
+  .addon-chip .ic{ width:38px; height:38px; border-radius:11px; background:var(--surface-2); display:grid; place-items:center; margin:0 auto 8px; color:var(--atlas-blue); }
+  .addon-chip .ic svg{ width:20px; height:20px; }
+  .addon-chip .t{ font-size:12px; font-weight:700; }
+
+  .active-banner{ margin:0 18px; background:var(--atlas-navy); color:#fff; border-radius:16px; padding:14px 16px; display:flex; gap:12px; align-items:center; box-shadow:var(--shadow); }
+  .active-banner .ring{ width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.12); display:grid; place-items:center; }
+  .active-banner .ring svg{ width:22px; height:22px; }
+
+  /* address node list */
+  .route-stack{ position:relative; padding-left:8px; }
+  .route-node{ display:flex; gap:12px; align-items:flex-start; }
+  .route-node .dotcol{ display:flex; flex-direction:column; align-items:center; padding-top:16px; }
+  .route-node .dotcol .d{ width:12px; height:12px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 0 0 1.5px var(--line); }
+  .route-node .dotcol .d.pick{ background:var(--atlas-blue); box-shadow:0 0 0 1.5px var(--atlas-blue); }
+  .route-node .dotcol .d.drop{ background:var(--atlas-amber); box-shadow:0 0 0 1.5px var(--atlas-amber); }
+  .route-node .dotcol .ln{ width:2px; flex:1; background:var(--line); min-height:22px; }
+
+  /* capture grid */
+  .capture-tile{ aspect-ratio:1; border-radius:14px; border:2px dashed var(--line); display:grid; place-items:center;
+    background:var(--surface); color:var(--atlas-blue); }
+  .capture-tile.filled{ border:none; position:relative; overflow:hidden; }
+  .room-img{ width:100%; height:100%; }
+  .cap-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .scenario-card{ display:flex; gap:12px; align-items:center; padding:13px; border:2px solid var(--line); border-radius:14px; background:var(--surface); }
+  .scenario-card.sel{ border-color:var(--atlas-blue); background:#F5F8FF; }
+  .scenario-card .em{ font-size:26px; }
+
+  /* scan */
+  .scan-stage{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--atlas-navy); color:#fff; padding:24px; }
+  .scan-frame{ position:relative; width:260px; height:300px; border-radius:20px; overflow:hidden; box-shadow:var(--shadow-lg); }
+  .scan-frame .line{ position:absolute; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,#2E6BFF,transparent);
+    box-shadow:0 0 16px 3px rgba(46,107,255,.7); animation:scanline 2.1s ease-in-out infinite; }
+  .scan-frame .det{ position:absolute; border:2px solid #2EF0C0; border-radius:6px; opacity:0; }
+  .scan-frame .det b{ position:absolute; top:-18px; left:-2px; background:#2EF0C0; color:#04261d; font-size:9px; font-weight:800; padding:1px 5px; border-radius:4px; white-space:nowrap; }
+  .scan-steps{ margin-top:26px; width:280px; }
+  .scan-step{ display:flex; align-items:center; gap:11px; padding:8px 0; opacity:.4; transition:.3s; font-size:14px; font-weight:600; }
+  .scan-step.on{ opacity:1; } .scan-step.done .dotc{ background:var(--ok); }
+  .scan-step .dotc{ width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,.18); display:grid; place-items:center; flex:0 0 22px; }
+  .scan-step .dotc svg{ width:13px; height:13px; }
+
+  /* item rows */
+  .item-row{ display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line-2); }
+  .item-row .iic{ width:42px; height:42px; border-radius:12px; background:var(--surface-2); display:grid; place-items:center; color:var(--atlas-navy); flex:0 0 42px; }
+  .item-row .iic svg{ width:22px; height:22px; }
+  .item-row .grow{ flex:1; min-width:0; }
+  .item-row .nm{ font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:6px; }
+  .item-row .meta{ font-size:12px; color:var(--ink-3); margin-top:2px; }
+  .conf{ font-size:10px; font-weight:800; padding:2px 6px; border-radius:5px; }
+  .conf.hi{ background:var(--ok-bg); color:var(--ok); } .conf.mid{ background:var(--warn-bg); color:var(--warn); }
+  .stepper{ display:flex; align-items:center; gap:0; background:var(--surface-2); border-radius:10px; overflow:hidden; }
+  .stepper button{ width:30px; height:30px; display:grid; place-items:center; color:var(--atlas-blue); }
+  .stepper button svg{ width:15px; height:15px; }
+  .stepper .q{ width:26px; text-align:center; font-weight:800; font-size:14px; }
+
+  .vol-card{ background:var(--grad-navy); color:#fff; border-radius:18px; padding:18px; }
+  .vol-card .big{ font-size:34px; font-weight:800; letter-spacing:-1px; }
+
+  /* vehicle option */
+  .veh-opt{ display:flex; gap:13px; align-items:center; padding:14px; border:2px solid var(--line); border-radius:16px; background:var(--surface); }
+  .veh-opt.sel{ border-color:var(--atlas-blue); background:#F5F8FF; }
+  .veh-opt .vic{ width:54px; height:46px; border-radius:11px; background:var(--surface-2); display:grid; place-items:center; color:var(--atlas-navy); }
+  .veh-opt .vic svg{ width:30px; height:30px; }
+  .veh-opt .rec{ font-size:10px; font-weight:800; color:var(--atlas-blue); }
+
+  .addon-line{ display:flex; align-items:center; gap:13px; padding:14px 0; border-bottom:1px solid var(--line-2); }
+  .addon-line .aic{ width:44px; height:44px; border-radius:12px; background:var(--surface-2); display:grid; place-items:center; color:var(--atlas-violet); flex:0 0 44px; }
+  .addon-line .aic svg{ width:22px; height:22px; }
+  .toggle{ width:50px; height:30px; border-radius:16px; background:var(--line); position:relative; transition:.2s; flex:0 0 50px; }
+  .toggle.on{ background:var(--atlas-blue); } .toggle i{ position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; transition:.2s; box-shadow:var(--shadow-sm); }
+  .toggle.on i{ left:23px; }
+
+  .pkg{ border:2px solid var(--line); border-radius:16px; padding:15px; background:var(--surface); position:relative; }
+  .pkg.sel{ border-color:var(--atlas-blue); }
+  .pkg .pop-tag{ position:absolute; top:-10px; right:14px; background:var(--grad-cta); color:#fff; font-size:10px; font-weight:800; padding:3px 9px; border-radius:6px; }
+
+  /* tracking */
+  .track-map{ height:240px; }
+  .timeline{ position:relative; padding-left:6px; }
+  .tl-step{ display:flex; gap:12px; }
+  .tl-step .c{ display:flex; flex-direction:column; align-items:center; }
+  .tl-step .c .d{ width:24px; height:24px; border-radius:50%; background:var(--line); display:grid; place-items:center; color:#fff; flex:0 0 24px; }
+  .tl-step .c .d svg{ width:13px; height:13px; }
+  .tl-step.done .c .d{ background:var(--ok); } .tl-step.now .c .d{ background:var(--atlas-blue); }
+  .tl-step .c .ln{ width:2px; flex:1; background:var(--line); min-height:20px; }
+  .tl-step.done .c .ln{ background:var(--ok); }
+  .tl-step .body{ padding-bottom:18px; } .tl-step .body .t{ font-weight:700; font-size:14.5px; } .tl-step .body .s{ font-size:12.5px; color:var(--ink-3); }
+
+  .driver-card{ display:flex; gap:12px; align-items:center; }
+  .driver-card .pic{ width:50px; height:50px; border-radius:50%; background:var(--grad-brand); color:#fff; display:grid; place-items:center; font-weight:800; }
+  .icon-btn{ width:44px; height:44px; border-radius:13px; background:var(--surface-2); display:grid; place-items:center; color:var(--atlas-blue); }
+  .icon-btn svg{ width:20px; height:20px; }
+
+  .hist-card{ display:flex; gap:12px; align-items:center; padding:14px; }
+  .hist-card .hic{ width:44px; height:44px; border-radius:12px; display:grid; place-items:center; color:#fff; flex:0 0 44px; }
+  .hist-card .hic svg{ width:22px; height:22px; }
+</style>
+</head>
+<body>
+<div class="device-stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div id="sb"></div>
+      <div class="app" id="app">
+
+        <!-- =================== HOME =================== -->
+        <section class="view active" id="v-home">
+          <div class="home-hero">
+            <div class="between">
+              <div><div class="hi">Good afternoon 👋</div><div class="name">Naz</div></div>
+              <div class="av">N</div>
+            </div>
+            <div class="searchbar">_SEARCH_ <span>Where are you sending today?</span></div>
+          </div>
+
+          <div class="intents">
+            <button class="intent" onclick="startSend()"><div class="ic i-send">_SEND_</div><div class="t">Send</div><div class="s">Instant</div></button>
+            <button class="intent" onclick="startMove()"><div class="ic i-move">_HOME_</div><div class="t">Move</div><div class="s">AI quote</div></button>
+            <button class="intent" onclick="startTransport()"><div class="ic i-trans">_TRUCK_</div><div class="t">Transport</div><div class="s">Heavy haul</div></button>
+          </div>
+
+          <div class="section">
+            <div class="active-banner" onclick="go('v-track')" style="margin:14px 0 0; cursor:pointer">
+              <div class="ring">_TRUCK_</div>
+              <div class="grow" style="flex:1"><div class="b">Order in progress</div><div class="small" style="opacity:.8">Driver Faiz · arriving in 6 min</div></div>
+              _CHEV_
+            </div>
+
+            <div class="section-title">Add-on services</div>
+            <div class="addons-row">
+              <div class="addon-chip"><div class="ic">_BOX_</div><div class="t">Packing</div></div>
+              <div class="addon-chip"><div class="ic">_USERS_</div><div class="t">Manpower</div></div>
+              <div class="addon-chip"><div class="ic">_SHIELD_</div><div class="t">Insurance</div></div>
+              <div class="addon-chip"><div class="ic">_HOME_</div><div class="t">Storage</div></div>
+              <div class="addon-chip"><div class="ic">_SPARK_</div><div class="t">Cleaning</div></div>
+            </div>
+
+            <div class="promo">
+              <div style="font-size:30px">📦</div>
+              <div style="flex:1"><div class="b">First move? <span class="badge-soft">ATLAS20</span></div><div class="small muted">Get 20% off your first AI-quoted move.</div></div>
+            </div>
+          </div>
+          <div style="height:8px"></div>
+          _TABBAR_
+        </section>
+
+        <!-- =================== SEND: route + vehicle =================== -->
+        <section class="view" id="v-send">
+          <div class="appbar"><button class="back" onclick="go('v-home')">_BACK_</button><h1>Send a parcel</h1></div>
+          <div class="steps"><i class="on"></i><i id="send-s2"></i><i id="send-s3"></i></div>
+          <div class="section">
+            <div class="card card-pad">
+              <div class="route-stack">
+                <div class="route-node"><div class="dotcol"><div class="d pick"></div><div class="ln"></div></div>
+                  <div style="flex:1; padding:10px 0"><div class="tiny muted bb">PICKUP</div><div class="b">Atlas HQ, Mont Kiara</div><div class="small muted">No. 1, Jln Kiara 3</div></div></div>
+                <div class="route-node"><div class="dotcol"><div class="d drop"></div></div>
+                  <div style="flex:1; padding:10px 0"><div class="tiny muted bb">DROP-OFF</div><div class="b">KLCC, Kuala Lumpur</div><div class="small muted">Suria KLCC, Lvl 2</div></div></div>
+              </div>
+              <button class="btn btn-sm btn-ghost" style="padding-left:0">_PLUS_ Add another stop (up to 20)</button>
+            </div>
+
+            <div class="section-title">Select vehicle · 8.4 km</div>
+            <div id="send-vehicles" style="display:flex; flex-direction:column; gap:10px"></div>
+
+            <div class="card card-pad" style="margin-top:14px; display:flex; gap:10px; align-items:center">
+              <div class="icon-btn">_CASH_</div>
+              <div style="flex:1"><div class="b small">Touch 'n Go eWallet</div><div class="tiny muted">Balance RM 248.50</div></div>
+              _CHEV_
+            </div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-primary btn-block btn-lg" onclick="confirmSend()">
+              <span>Confirm — <span id="send-price">RM 23.10</span></span></button>
+          </div>
+        </section>
+
+        <!-- =================== MOVE: route + access =================== -->
+        <section class="view" id="v-move-route">
+          <div class="appbar"><button class="back" onclick="go('v-home')">_BACK_</button><h1>Move · AI quote</h1></div>
+          <div class="steps"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+          <div class="section">
+            <div class="card card-pad">
+              <div class="route-stack">
+                <div class="route-node"><div class="dotcol"><div class="d pick"></div><div class="ln"></div></div>
+                  <div style="flex:1; padding:10px 0"><div class="tiny muted bb">MOVING FROM</div><div class="b">Mont Kiara, KL</div><div class="small muted">Arcoris Soho, Lvl 12</div></div></div>
+                <div class="route-node"><div class="dotcol"><div class="d drop"></div></div>
+                  <div style="flex:1; padding:10px 0"><div class="tiny muted bb">MOVING TO</div><div class="b">Bangsar, KL</div><div class="small muted">Bangsar Heights, Unit 3A</div></div></div>
+              </div>
+            </div>
+
+            <div class="section-title">Access details <span class="muted" style="text-transform:none; font-weight:600">— helps the AI pick the right vehicle &amp; crew</span></div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="ic" style="background:var(--surface-2); color:var(--atlas-blue)">_HOME_</div>
+                <div class="grow"><div class="t">Floor / lift access</div><div class="s">From: Lvl 12, lift · To: Lvl 3, stairs</div></div>_CHEV_</div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2); color:var(--atlas-amber)">_STAIRS_</div>
+                <div class="grow"><div class="t">Stairs / walking distance</div><div class="s">~25 m carry at destination</div></div>_CHEV_</div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2); color:var(--atlas-teal)">_TRUCK_</div>
+                <div class="grow"><div class="t">Parking for lorry</div><div class="s">Available, both ends</div></div>_CHEV_</div>
+            </div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-cta btn-block btn-lg" onclick="go('v-move-capture')">Next — capture your home _CHEV_</button>
+          </div>
+        </section>
+
+        <!-- =================== MOVE: capture =================== -->
+        <section class="view" id="v-move-capture">
+          <div class="appbar"><button class="back" onclick="go('v-move-route')">_BACK_</button><h1>Capture your home</h1></div>
+          <div class="steps"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+          <div class="section">
+            <div class="card card-pad" style="background:linear-gradient(120deg,#EEF3FF,#F3EEFF)">
+              <div class="row"><div style="width:40px;height:40px;border-radius:11px;background:var(--grad-brand);display:grid;place-items:center;color:#fff">_SPARK_</div>
+                <div><div class="bb">AI Quotation Engine</div><div class="tiny muted">Photograph or film each room — we estimate volume &amp; price in seconds.</div></div></div>
+            </div>
+
+            <div class="section-title">Take photos / video</div>
+            <div class="cap-grid">
+              <button class="capture-tile" onclick="addRoom(this)">_CAMERA_</button>
+              <button class="capture-tile" onclick="addRoom(this)">_CAMERA_</button>
+              <button class="capture-tile" onclick="addRoom(this)">_VIDEO_</button>
+            </div>
+            <div class="tiny muted center" style="margin-top:10px">Tap to simulate capturing a room · <b id="cap-count">0</b> captured</div>
+
+            <div class="divider"></div>
+
+            <div class="section-title">Or pick a demo scenario</div>
+            <div style="display:flex; flex-direction:column; gap:10px">
+              <button class="scenario-card" data-sc="studio" onclick="pickScenario('studio',this)"><div class="em">🛋️</div>
+                <div style="flex:1; text-align:left"><div class="b">Studio / few items</div><div class="tiny muted">~5 m³ · best fit: Van</div></div></button>
+              <button class="scenario-card" data-sc="twobed" onclick="pickScenario('twobed',this)"><div class="em">🏠</div>
+                <div style="flex:1; text-align:left"><div class="b">2-bedroom apartment</div><div class="tiny muted">~12 m³ · best fit: 3-ton lorry</div></div></button>
+              <button class="scenario-card" data-sc="office" onclick="pickScenario('office',this)"><div class="em">🏢</div>
+                <div style="flex:1; text-align:left"><div class="b">Office relocation</div><div class="tiny muted">~18 m³ · best fit: 5-ton lorry</div></div></button>
+            </div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-cta btn-block btn-lg" id="cap-next" disabled onclick="runScan()">Generate AI quote _SPARK_</button>
+          </div>
+        </section>
+
+        <!-- =================== MOVE: scanning =================== -->
+        <section class="view" id="v-move-scan" style="background:var(--atlas-navy)">
+          <div class="scan-stage">
+            <div class="bb" style="font-size:18px; margin-bottom:18px">Analysing your home…</div>
+            <div class="scan-frame" id="scan-frame">
+              <svg viewBox="0 0 260 300" style="width:100%;height:100%" preserveAspectRatio="xMidYMid slice">
+                <rect width="260" height="300" fill="#1b2c52"/>
+                <rect x="0" y="210" width="260" height="90" fill="#16244a"/>
+                <rect x="24" y="120" width="92" height="92" rx="6" fill="#2c3f6e"/>
+                <rect x="20" y="150" width="100" height="20" rx="4" fill="#36507f"/>
+                <rect x="140" y="96" width="96" height="116" rx="6" fill="#314879"/>
+                <rect x="150" y="60" width="74" height="40" rx="4" fill="#3a5690"/>
+                <circle cx="196" cy="150" r="22" fill="#26395f"/>
+                <rect x="30" y="40" width="60" height="46" rx="4" fill="#2a3d6b"/>
+              </svg>
+              <div class="line"></div>
+              <div class="det" id="d1" style="left:24px; top:120px; width:92px; height:92px"><b>Sofa · 0.96</b></div>
+              <div class="det" id="d2" style="left:140px; top:96px; width:96px; height:116px"><b>Wardrobe · 0.88</b></div>
+              <div class="det" id="d3" style="left:174px; top:128px; width:44px; height:44px"><b>Fridge · 0.97</b></div>
+              <div class="det" id="d4" style="left:30px; top:40px; width:60px; height:46px"><b>TV · 0.82</b></div>
+            </div>
+            <div class="scan-steps" id="scan-steps">
+              <div class="scan-step" id="ss0"><span class="dotc">_CHECK_</span> Pre-processing &amp; frame sampling</div>
+              <div class="scan-step" id="ss1"><span class="dotc">_CHECK_</span> Detecting &amp; classifying items</div>
+              <div class="scan-step" id="ss2"><span class="dotc">_CHECK_</span> Estimating dimensions &amp; volume</div>
+              <div class="scan-step" id="ss3"><span class="dotc">_CHECK_</span> Matching the right vehicle</div>
+              <div class="scan-step" id="ss4"><span class="dotc">_CHECK_</span> Calculating your price</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================== MOVE: item list =================== -->
+        <section class="view" id="v-move-items">
+          <div class="appbar"><button class="back" onclick="go('v-move-capture')">_BACK_</button><h1>Detected items</h1></div>
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+          <div class="section">
+            <div class="vol-card">
+              <div class="between"><div><div class="tiny" style="opacity:.75">ESTIMATED TOTAL VOLUME</div><div class="big"><span id="total-vol">5.1</span> m³</div></div>
+                <div style="text-align:right"><div class="tiny" style="opacity:.75">EST. WEIGHT</div><div class="bb" style="font-size:20px"><span id="total-wt">410</span> kg</div></div></div>
+              <div class="tiny" style="opacity:.8; margin-top:8px">⚡ Quote generated in 11s · confirm the list to firm your price</div>
+            </div>
+
+            <div class="card card-pad" style="margin-top:14px; display:flex; gap:10px; background:#FFF9EE; align-items:flex-start">
+              <div style="color:var(--warn)">_EDIT_</div>
+              <div class="tiny" style="color:#8a6a14"><b>Review &amp; edit.</b> Add, remove or adjust quantities — your edits firm the price and improve future estimates.</div>
+            </div>
+
+            <div class="section-title">Items · <span id="item-count">6</span> detected</div>
+            <div id="item-list"></div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:8px; padding-left:0" onclick="toast('Add-item picker would open here')">_PLUS_ Add an item manually</button>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-primary btn-block btn-lg" onclick="go('v-move-vehicle')">Confirm list — choose vehicle _CHEV_</button>
+          </div>
+        </section>
+
+        <!-- =================== MOVE: vehicle =================== -->
+        <section class="view" id="v-move-vehicle">
+          <div class="appbar"><button class="back" onclick="go('v-move-items')">_BACK_</button><h1>Recommended vehicle</h1></div>
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+          <div class="section">
+            <div class="tiny muted" style="margin:6px 2px 12px">Based on <b id="veh-vol">5.1 m³</b> with headroom for safe loading, Atlas recommends the smallest vehicle that fits — with the next size up as an option.</div>
+            <div id="veh-list" style="display:flex; flex-direction:column; gap:11px"></div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-primary btn-block btn-lg" onclick="go('v-move-addons')">Continue to add-ons _CHEV_</button>
+          </div>
+        </section>
+
+        <!-- =================== MOVE: add-ons =================== -->
+        <section class="view" id="v-move-addons">
+          <div class="appbar"><button class="back" onclick="go('v-move-vehicle')">_BACK_</button><h1>Add-on services</h1></div>
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+          <div class="section">
+            <div class="tiny muted" style="margin:6px 2px 10px">Supplied by vetted Atlas partners. Add what you need — pay in one bill.</div>
+            <div id="addon-list"></div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-cta btn-block btn-lg" onclick="go('v-move-quote')">See my quote _CHEV_</button>
+          </div>
+        </section>
+
+        <!-- =================== MOVE: quote / packages =================== -->
+        <section class="view" id="v-move-quote">
+          <div class="appbar"><button class="back" onclick="go('v-move-addons')">_BACK_</button><h1>Your quote</h1></div>
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+          <div class="section">
+            <div class="card card-pad">
+              <div class="between"><div class="b">Price breakdown</div><span class="badge ok">_CHECK_ Firm price · ±8%</span></div>
+              <div class="divider"></div>
+              <div id="breakdown"></div>
+              <div class="divider"></div>
+              <div class="between"><div class="bb">Total</div><div class="price" style="font-size:24px" id="quote-total">RM 0</div></div>
+            </div>
+
+            <div class="section-title">Choose a package</div>
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <div class="pkg sel" id="pkg-standard" onclick="pickPkg('standard',this)">
+                <div class="between"><div class="b">Standard</div><div class="price" id="pkg-std-price">RM 0</div></div>
+                <div class="tiny muted" style="margin-top:4px">Driver + selected add-ons · scheduled slot</div>
+              </div>
+              <div class="pkg" id="pkg-priority" onclick="pickPkg('priority',this)">
+                <div class="pop-tag">POPULAR</div>
+                <div class="between"><div class="b">Priority crew</div><div class="price" id="pkg-pri-price">RM 0</div></div>
+                <div class="tiny muted" style="margin-top:4px">Top-rated crew + faster ETA + RM5k coverage</div>
+              </div>
+            </div>
+
+            <div class="section-title">Schedule</div>
+            <div class="row wrap" style="gap:8px">
+              <button class="pill active">Today, 2:00 PM</button>
+              <button class="pill">Tomorrow AM</button>
+              <button class="pill">Pick date</button>
+              <button class="pill">Recurring</button>
+            </div>
+
+            <div class="card card-pad" style="margin-top:14px; display:flex; gap:10px; align-items:center">
+              <div class="icon-btn">_CASH_</div>
+              <div style="flex:1"><div class="b small">Touch 'n Go eWallet</div><div class="tiny muted">ATLAS20 applied · −20%</div></div>
+              _CHEV_
+            </div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-cta btn-block btn-lg" onclick="confirmMove()">Confirm &amp; book — <span id="final-pay">RM 0</span></button>
+          </div>
+        </section>
+
+        <!-- =================== TRACKING =================== -->
+        <section class="view" id="v-track">
+          <div class="map track-map" id="track-map">
+            <div style="position:absolute; top:12px; left:12px; right:12px; display:flex; justify-content:space-between; z-index:5">
+              <button class="back" onclick="go('v-home')" style="background:#fff">_BACK_</button>
+              <span class="badge info" style="height:34px; padding:0 12px; box-shadow:var(--shadow)">_CLOCK_ ETA 6 min</span>
+            </div>
+            <div class="road" style="left:0; top:120px; width:100%; height:14px"></div>
+            <div class="road" style="left:130px; top:0; width:14px; height:100%"></div>
+            <div class="route" style="left:40px; top:175px; width:96px; transform:rotate(-32deg); transform-origin:left"></div>
+            <div class="route" style="left:130px; top:60px; width:70px; transform:rotate(20deg); transform-origin:left"></div>
+            <div class="pin" style="left:40px; top:200px"><div class="dot" style="background:var(--atlas-blue)"></div></div>
+            <div class="pin" style="left:205px; top:48px"><div class="dot" style="background:var(--atlas-amber)"></div></div>
+            <div class="veh" id="track-veh" style="left:135px; top:118px">_TRUCK_</div>
+          </div>
+          <div class="section" style="margin-top:-20px; position:relative; z-index:5">
+            <div class="card card-pad">
+              <div class="driver-card">
+                <div class="pic">F</div>
+                <div style="flex:1"><div class="b">Faiz Rahman</div><div class="tiny muted">1-Ton Lorry · WTF 4821 · _STAR_ 4.9</div></div>
+                <button class="icon-btn">_CHAT_</button><button class="icon-btn">_PHONE_</button>
+              </div>
+              <div class="divider"></div>
+              <div class="timeline" id="track-timeline"></div>
+            </div>
+            <div class="card card-pad" style="margin-top:12px; display:flex; gap:10px; align-items:center">
+              _SHIELD_<div class="tiny muted" style="flex:1">Goods covered up to RM 5,000 · masked calling protects your number</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================== ACTIVITY / HISTORY =================== -->
+        <section class="view" id="v-activity">
+          <div class="appbar"><h1>Activity</h1></div>
+          <div class="row wrap" style="gap:8px; padding:0 18px 6px"><button class="pill active">All</button><button class="pill">Send</button><button class="pill">Move</button><button class="pill">Transport</button></div>
+          <div class="section">
+            <div class="card" style="overflow:hidden">
+              <div class="hist-card"><div class="hic" style="background:var(--grad-cta)">_HOME_</div>
+                <div style="flex:1"><div class="b">House move · Mont Kiara → Bangsar</div><div class="tiny muted">In progress · 1-Ton Lorry</div></div><div class="price small">RM 214.40</div></div>
+              <div style="height:1px;background:var(--line-2)"></div>
+              <div class="hist-card"><div class="hic" style="background:var(--grad-brand)">_SEND_</div>
+                <div style="flex:1"><div class="b">Parcel · Mont Kiara → KLCC</div><div class="tiny muted">12 Jun · Completed</div></div><div class="price small">RM 23.10</div></div>
+              <div style="height:1px;background:var(--line-2)"></div>
+              <div class="hist-card"><div class="hic" style="background:linear-gradient(135deg,#18B6A6,#12306E)">_TRUCK_</div>
+                <div style="flex:1"><div class="b">Transport · KL → Penang</div><div class="tiny muted">4 Jun · Completed</div></div><div class="price small">RM 680.00</div></div>
+              <div style="height:1px;background:var(--line-2)"></div>
+              <div class="hist-card"><div class="hic" style="background:var(--grad-brand)">_SEND_</div>
+                <div style="flex:1"><div class="b">Parcel · Bangsar → Subang</div><div class="tiny muted">29 May · Completed</div></div><div class="price small">RM 18.50</div></div>
+            </div>
+            <button class="btn btn-block" style="margin-top:14px" onclick="toast('Re-book from history')">Re-book a past order</button>
+          </div>
+          _TABBAR_
+        </section>
+
+        <!-- =================== WALLET =================== -->
+        <section class="view" id="v-wallet">
+          <div class="appbar"><h1>Wallet</h1></div>
+          <div class="section">
+            <div class="vol-card" style="background:var(--grad-brand)">
+              <div class="tiny" style="opacity:.8">ATLAS BALANCE</div>
+              <div class="big">RM 248.50</div>
+              <div class="row" style="gap:10px; margin-top:14px">
+                <button class="btn btn-sm" style="flex:1; background:rgba(255,255,255,.18); color:#fff">_PLUS_ Top up</button>
+                <button class="btn btn-sm" style="flex:1; background:rgba(255,255,255,.18); color:#fff">Transfer</button>
+              </div>
+            </div>
+            <div class="section-title">Payment methods</div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="ic" style="background:#E8F0FF; color:var(--atlas-blue)">_CASH_</div><div class="grow"><div class="t">Touch 'n Go eWallet</div><div class="s">Linked · default</div></div><span class="badge ok">Default</span></div>
+              <div class="list-row"><div class="ic" style="background:#FFF6E0; color:var(--warn)">_WALLET_</div><div class="grow"><div class="t">Visa ···· 4821</div><div class="s">Expires 09/27</div></div>_CHEV_</div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2); color:var(--atlas-violet)">_PLUS_</div><div class="grow"><div class="t">Add FPX / GrabPay / Boost</div></div>_CHEV_</div>
+            </div>
+            <div class="section-title">Promos</div>
+            <div class="card card-pad promo" style="margin:0; background:linear-gradient(120deg,#EEF3FF,#F3EEFF)">
+              <div style="font-size:26px">🎟️</div><div style="flex:1"><div class="b">ATLAS20 · 20% off first move</div><div class="tiny muted">Expires 30 Jun</div></div><span class="badge info">Active</span>
+            </div>
+          </div>
+          _TABBAR_
+        </section>
+
+        <!-- =================== PROFILE =================== -->
+        <section class="view" id="v-profile">
+          <div class="appbar"><h1>Profile</h1></div>
+          <div class="section">
+            <div class="card card-pad" style="display:flex; gap:14px; align-items:center">
+              <div class="av" style="width:58px;height:58px;border-radius:50%;background:var(--grad-brand);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:800">N</div>
+              <div style="flex:1"><div class="bb" style="font-size:18px">Naz</div><div class="tiny muted">narayanan.ramesh@weareamnet.com</div><div class="row" style="gap:4px;margin-top:4px"><span class="badge ok">_STAR_ 4.9</span><span class="badge info">Atlas Plus</span></div></div>
+            </div>
+            <div class="section-title">Account</div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="ic" style="background:var(--surface-2);color:var(--atlas-blue)">_PIN_</div><div class="grow"><div class="t">Saved addresses</div><div class="s">Home · Office · 2 more</div></div>_CHEV_</div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2);color:var(--atlas-violet)">_LIST_</div><div class="grow"><div class="t">Saved item lists</div><div class="s">Reuse for repeat moves</div></div>_CHEV_</div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2);color:var(--atlas-teal)">_SHIELD_</div><div class="grow"><div class="t">Privacy &amp; data (PDPA)</div><div class="s">Manage photo/video consent</div></div>_CHEV_</div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2);color:var(--atlas-amber)">_DOC_</div><div class="grow"><div class="t">Switch to Business account</div><div class="s">Bulk booking · invoicing · API</div></div>_CHEV_</div>
+            </div>
+            <button class="btn btn-block" style="margin-top:16px; color:var(--danger)">Log out</button>
+            <div class="tiny muted center" style="margin-top:14px">Atlas v1.0 · Prototype</div>
+          </div>
+          _TABBAR_
+        </section>
+
+        <!-- success sheet scrim -->
+        <div class="sheet-scrim" id="done-scrim" onclick="closeSheet('done')"></div>
+        <div class="sheet" id="done">
+          <div class="grabber"></div>
+          <div class="center" style="padding:6px 0 4px">
+            <div class="pop" style="width:72px;height:72px;border-radius:50%;background:var(--ok-bg);display:grid;place-items:center;margin:0 auto 14px;color:var(--ok)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="bb" style="font-size:20px" id="done-title">Booking confirmed!</div>
+            <div class="muted small" id="done-sub" style="margin-top:6px">A driver is being matched near you.</div>
+          </div>
+          <div class="spacer-20"></div>
+          <button class="btn btn-primary btn-block btn-lg" onclick="closeSheet('done'); go('v-track')">Track my order</button>
+          <button class="btn btn-block btn-ghost" onclick="closeSheet('done'); go('v-home')">Back to home</button>
+          <div class="spacer-12"></div>
+        </div>
+
+      </div><!-- /app -->
+    </div><!-- /screen -->
+  </div><!-- /phone -->
+</div>
+
+<script src="../js/atlas.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

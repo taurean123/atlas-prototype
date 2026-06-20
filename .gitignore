@@ -1,0 +1,6 @@
+# Dev / test artifacts — not part of the prototype
+node_modules/
+package.json
+package-lock.json
+_t*.js
+.DS_Store

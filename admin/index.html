@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/atlas.css">
+<style>
+  .opsmap{ height:380px; border-radius:14px; }
+  .opsmap .label{ position:absolute; background:#fff; border:1px solid var(--line); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; box-shadow:var(--shadow-sm); transform:translate(-50%,-150%); }
+  .heat{ position:absolute; border-radius:50%; transform:translate(-50%,-50%); }
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; font-size:12px; font-weight:600; color:var(--ink-2); }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; } .legend i{ width:11px; height:11px; border-radius:50%; }
+  .tariff-input{ width:90px; text-align:right; }
+  .toggle-w{ width:46px; height:26px; border-radius:14px; background:var(--line); position:relative; cursor:pointer; transition:.2s; }
+  .toggle-w.on{ background:var(--atlas-blue);} .toggle-w i{ position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s;}
+  .toggle-w.on i{ left:23px; }
+  .risk-meter{ height:8px; border-radius:4px; background:var(--line); overflow:hidden; width:80px; }
+  .risk-meter i{ display:block; height:100%; }
+  .donut{ width:150px; height:150px; }
+  .stat-mini{ display:flex; align-items:center; gap:10px; }
+  .stat-mini .d{ width:10px; height:10px; border-radius:3px; }
+</style>
+</head>
+<body>
+<div class="dash">
+  <!-- sidebar -->
+  <aside class="side">
+    <div class="atlas-logo"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span><span class="word">Atlas <span style="font-weight:600;font-size:13px;opacity:.6">Admin</span></span></div>
+    <nav class="nav" id="nav">
+      <div class="grp">Operations</div>
+      <a class="active" data-p="overview" onclick="nav('overview',this)">_CHART_ Overview</a>
+      <a data-p="orders" onclick="nav('orders',this)">_PIN_ Live orders</a>
+      <a data-p="dispatch" onclick="nav('dispatch',this)">_TRUCK_ Dispatch</a>
+      <div class="grp">Marketplace</div>
+      <a data-p="pricing" onclick="nav('pricing',this)">_CASH_ Pricing</a>
+      <a data-p="drivers" onclick="nav('drivers',this)">_USERS_ Driver approval</a>
+      <a data-p="fraud" onclick="nav('fraud',this)">_SHIELD_ Fraud queue</a>
+      <div class="grp">Insight</div>
+      <a data-p="analytics" onclick="nav('analytics',this)">_GRID_ Analytics &amp; AI</a>
+    </nav>
+    <div class="badge-pro"><div class="t">AI Quote Engine</div><div class="s">Live · 96.2% uptime · v1 vision-LLM</div></div>
+    <div style="margin-top:18px"><a href="../index.html" style="color:rgba(255,255,255,.6);font-size:13px;font-weight:600">← Back to launcher</a></div>
+  </aside>
+
+  <!-- main -->
+  <main class="main">
+    <div class="topbar">
+      <h2 id="page-title">Overview</h2>
+      <div class="field search" style="margin-left:8px"><span>_SEARCH_</span><input placeholder="Search orders, drivers, customers…"></div>
+      <div class="spacer" style="flex:1"></div>
+      <button class="btn-w">_BELL_ <span style="background:var(--danger);color:#fff;border-radius:8px;padding:0 6px;font-size:11px">5</span></button>
+      <div class="av">OP</div>
+    </div>
+    <div class="content">
+
+      <!-- ===== OVERVIEW ===== -->
+      <section class="page active" id="p-overview">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">GMV (today)</div><div class="val">RM 184,920</div><div class="delta up">▲ 8.4% vs yesterday</div></div>
+          <div class="kpi"><div class="lab">Completed bookings</div><div class="val">2,418</div><div class="delta up">▲ 5.1%</div></div>
+          <div class="kpi"><div class="lab">Take rate</div><div class="val">18.2%</div><div class="delta up">▲ 0.3pp</div></div>
+          <div class="kpi"><div class="lab">Avg pickup ETA</div><div class="val">6.4 min</div><div class="delta down">▼ 0.8 min</div></div>
+        </div>
+
+        <div class="grid g-2" style="margin-top:16px">
+          <div class="panel">
+            <div class="ph"><h3>GMV — last 7 days</h3><span class="badge ok">▲ 11% w/w</span></div>
+            <div class="pb"><div class="bar-chart" id="gmv-chart"></div><div style="height:18px"></div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>Service line mix</h3></div>
+            <div class="pb" style="display:flex; gap:18px; align-items:center">
+              <svg class="donut" viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#E5E9F0" stroke-width="7"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#1A4FD6" stroke-width="7" stroke-dasharray="52 48" stroke-dashoffset="25"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#FF9E2C" stroke-width="7" stroke-dasharray="33 67" stroke-dashoffset="73"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#18B6A6" stroke-width="7" stroke-dasharray="15 85" stroke-dashoffset="40"/>
+              </svg>
+              <div style="flex:1; display:flex; flex-direction:column; gap:12px">
+                <div class="stat-mini"><span class="d" style="background:#1A4FD6"></span><div style="flex:1"><div class="b">Send</div><div class="tiny muted">Instant courier</div></div><div class="bb">52%</div></div>
+                <div class="stat-mini"><span class="d" style="background:#FF9E2C"></span><div style="flex:1"><div class="b">Move</div><div class="tiny muted">AI-quoted relocation</div></div><div class="bb">33%</div></div>
+                <div class="stat-mini"><span class="d" style="background:#18B6A6"></span><div style="flex:1"><div class="b">Transport</div><div class="tiny muted">Interstate / heavy</div></div><div class="bb">15%</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g-2" style="margin-top:16px">
+          <div class="panel">
+            <div class="ph"><h3>Live order feed</h3><a class="btn-w" onclick="nav('orders',document.querySelector('[data-p=orders]'))">Open map</a></div>
+            <table class="tbl">
+              <thead><tr><th>Order</th><th>Line</th><th>Driver</th><th>Status</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td class="b">#A-90431</td><td>Move</td><td>Faiz R.</td><td><span class="badge info">En route</span></td><td>RM 214.40</td></tr>
+                <tr><td class="b">#A-90428</td><td>Send</td><td>Aida S.</td><td><span class="badge ok">Delivered</span></td><td>RM 18.50</td></tr>
+                <tr><td class="b">#A-90425</td><td>Transport</td><td>Kumar V.</td><td><span class="badge info">Loading</span></td><td>RM 680.00</td></tr>
+                <tr><td class="b">#A-90422</td><td>Send</td><td>—</td><td><span class="badge warn">Matching</span></td><td>RM 24.00</td></tr>
+                <tr><td class="b">#A-90419</td><td>Move</td><td>Lim W.</td><td><span class="badge danger">SLA risk</span></td><td>RM 386.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>Marketplace health</h3></div>
+            <div class="pb">
+              <div class="between" style="padding:6px 0"><div><div class="b">Match rate</div><div class="tiny muted">Orders matched &lt; 60s</div></div><div class="bb" style="color:var(--ok)">94.8%</div></div>
+              <div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div><div class="b">Active drivers</div><div class="tiny muted">Online now</div></div><div class="bb">1,284</div></div>
+              <div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div><div class="b">Driver idle time</div><div class="tiny muted">Avg between jobs</div></div><div class="bb" style="color:var(--ok)">7.2 min</div></div>
+              <div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div><div class="b">Cancellation rate</div><div class="tiny muted">Today</div></div><div class="bb">3.1%</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== LIVE ORDERS ===== -->
+      <section class="page" id="p-orders">
+        <div class="panel">
+          <div class="ph"><h3>Live order map — Klang Valley</h3>
+            <div class="row"><button class="btn-w">_FILTER_ Filter</button><button class="btn-w primary">_PIN_ 2,418 active</button></div></div>
+          <div class="pb">
+            <div class="map opsmap" id="ops-map">
+              <div class="road" style="left:0; top:130px; width:100%; height:16px"></div>
+              <div class="road" style="left:0; top:270px; width:100%; height:16px"></div>
+              <div class="road" style="left:220px; top:0; width:16px; height:100%"></div>
+              <div class="road" style="left:520px; top:0; width:16px; height:100%"></div>
+              <div class="heat" style="left:240px; top:140px; width:140px; height:140px; background:radial-gradient(rgba(229,72,77,.35),transparent 70%)"></div>
+              <div class="heat" style="left:540px; top:280px; width:120px; height:120px; background:radial-gradient(rgba(255,158,44,.35),transparent 70%)"></div>
+              <div class="heat" style="left:160px; top:300px; width:90px; height:90px; background:radial-gradient(rgba(26,79,214,.30),transparent 70%)"></div>
+              <div class="veh" style="left:230px; top:138px">_TRUCK_</div>
+              <div class="veh" style="left:300px; top:200px; background:var(--atlas-blue)">_SEND_</div>
+              <div class="veh" style="left:520px; top:278px">_TRUCK_</div>
+              <div class="veh" style="left:540px; top:140px; background:var(--atlas-blue)">_SEND_</div>
+              <div class="veh" style="left:180px; top:320px; background:var(--atlas-teal)">_TRUCK_</div>
+              <div class="label" style="left:240px; top:140px">Mont Kiara · high demand</div>
+              <div class="label" style="left:540px; top:280px">Cheras · surge 1.3×</div>
+            </div>
+            <div class="legend" style="margin-top:14px">
+              <span><i style="background:var(--atlas-navy)"></i> Lorry / Move</span>
+              <span><i style="background:var(--atlas-blue)"></i> Bike / Send</span>
+              <span><i style="background:var(--atlas-teal)"></i> Transport</span>
+              <span><i style="background:rgba(229,72,77,.6)"></i> Demand heat</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Exceptions &amp; SLA breaches</h3><span class="badge danger">3 need action</span></div>
+          <table class="tbl">
+            <thead><tr><th>Order</th><th>Issue</th><th>Waiting</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="b">#A-90419</td><td>Move running 18 min over window</td><td>18 min</td><td><button class="btn-w dark">Reassign</button></td></tr>
+              <tr><td class="b">#A-90422</td><td>No driver matched in zone</td><td>4 min</td><td><button class="btn-w dark">Manual dispatch</button></td></tr>
+              <tr><td class="b">#A-90402</td><td>Customer reported delay</td><td>11 min</td><td><button class="btn-w">Contact</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== DISPATCH ===== -->
+      <section class="page" id="p-dispatch">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Matching queue</div><div class="val">12</div><div class="delta">orders awaiting match</div></div>
+          <div class="kpi"><div class="lab">Idle drivers</div><div class="val">86</div><div class="delta">in low-demand zones</div></div>
+          <div class="kpi"><div class="lab">Avg accept time</div><div class="val">8.1s</div><div class="delta up">healthy</div></div>
+          <div class="kpi"><div class="lab">Batched jobs</div><div class="val">214</div><div class="delta up">▲ utilisation +9%</div></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Matching queue health</h3><button class="btn-w primary">Auto-balance zones</button></div>
+          <table class="tbl">
+            <thead><tr><th>Order</th><th>Line</th><th>Zone</th><th>Nearest driver</th><th>Predicted accept</th><th></th></tr></thead>
+            <tbody>
+              <tr><td class="b">#A-90422</td><td>Send</td><td>Bangsar</td><td>1.2 km · Aida S.</td><td><span class="badge ok">High 88%</span></td><td><button class="btn-w dark">Dispatch</button></td></tr>
+              <tr><td class="b">#A-90431</td><td>Move</td><td>Mont Kiara</td><td>0.8 km · Faiz R.</td><td><span class="badge ok">High 91%</span></td><td><button class="btn-w dark">Dispatch</button></td></tr>
+              <tr><td class="b">#A-90440</td><td>Transport</td><td>Shah Alam</td><td>6.4 km · Kumar V.</td><td><span class="badge warn">Med 61%</span></td><td><button class="btn-w dark">Dispatch</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== PRICING ===== -->
+      <section class="page" id="p-pricing">
+        <div class="grid g-2">
+          <div class="panel">
+            <div class="ph"><h3>Base rates &amp; per-km tariffs</h3><button class="btn-w primary" onclick="toast('Tariffs published to live')">Publish changes</button></div>
+            <table class="tbl">
+              <thead><tr><th>Vehicle</th><th>Base (RM)</th><th>Per km (RM)</th><th>Capacity</th></tr></thead>
+              <tbody>
+                <tr><td class="b">Motorbike</td><td><input class="field tariff-input" value="5.00"></td><td><input class="field tariff-input" value="1.20"></td><td>Parcel</td></tr>
+                <tr><td class="b">Car</td><td><input class="field tariff-input" value="8.00"></td><td><input class="field tariff-input" value="1.80"></td><td>25 kg</td></tr>
+                <tr><td class="b">Van</td><td><input class="field tariff-input" value="80.00"></td><td><input class="field tariff-input" value="2.50"></td><td>6 m³</td></tr>
+                <tr><td class="b">1-Ton Lorry</td><td><input class="field tariff-input" value="130.00"></td><td><input class="field tariff-input" value="3.20"></td><td>10 m³</td></tr>
+                <tr><td class="b">3-Ton Lorry</td><td><input class="field tariff-input" value="220.00"></td><td><input class="field tariff-input" value="4.00"></td><td>18 m³</td></tr>
+                <tr><td class="b">5-Ton Lorry</td><td><input class="field tariff-input" value="320.00"></td><td><input class="field tariff-input" value="4.80"></td><td>28 m³ · tail-lift</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div class="panel">
+              <div class="ph"><h3>Surge rules</h3></div>
+              <div class="pb">
+                <div class="between" style="padding:8px 0"><div><div class="b">Peak-hour surge</div><div class="tiny muted">Mon–Fri 5–8 PM · ×1.3</div></div><div class="toggle-w on" onclick="this.classList.toggle('on')"><i></i></div></div>
+                <div class="divider"></div>
+                <div class="between" style="padding:8px 0"><div><div class="b">Rain / weather surge</div><div class="tiny muted">Auto ×1.2 on alerts</div></div><div class="toggle-w on" onclick="this.classList.toggle('on')"><i></i></div></div>
+                <div class="divider"></div>
+                <div class="between" style="padding:8px 0"><div><div class="b">Low-supply surge</div><div class="tiny muted">Dynamic to 1.5× cap</div></div><div class="toggle-w on" onclick="this.classList.toggle('on')"><i></i></div></div>
+              </div>
+            </div>
+            <div class="panel" style="margin-top:16px">
+              <div class="ph"><h3>Add-on &amp; promo pricing</h3></div>
+              <table class="tbl">
+                <tbody>
+                  <tr><td class="b">Packing</td><td>RM 120</td><td><span class="badge ok">Active</span></td></tr>
+                  <tr><td class="b">Manpower (2)</td><td>RM 90</td><td><span class="badge ok">Active</span></td></tr>
+                  <tr><td class="b">Insurance</td><td>RM 35</td><td><span class="badge ok">Active</span></td></tr>
+                  <tr><td class="b">Promo · ATLAS20</td><td>−20%</td><td><span class="badge warn">Ends 30 Jun</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DRIVER APPROVAL ===== -->
+      <section class="page" id="p-drivers">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Pending verification</div><div class="val">28</div><div class="delta">in queue</div></div>
+          <div class="kpi"><div class="lab">Approved (week)</div><div class="val">142</div><div class="delta up">▲ supply growth</div></div>
+          <div class="kpi"><div class="lab">Avg review time</div><div class="val">3.2 hrs</div><div class="delta up">▼ faster</div></div>
+          <div class="kpi"><div class="lab">Re-verification due</div><div class="val">9</div><div class="delta down">insurance expiring</div></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Verification queue</h3><button class="btn-w">_FILTER_ Filter</button></div>
+          <table class="tbl">
+            <thead><tr><th>Applicant</th><th>Vehicle</th><th>Licence</th><th>Insurance</th><th>Background</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><div class="row"><span class="avatar-s">RM</span><span class="b">Ridzuan M.</span></div></td><td>3-Ton Lorry</td><td><span class="badge ok">✓</span></td><td><span class="badge ok">✓</span></td><td><span class="badge ok">Clear</span></td><td><button class="btn-w primary">Approve</button></td></tr>
+              <tr><td><div class="row"><span class="avatar-s">NH</span><span class="b">Nurul H.</span></div></td><td>Van</td><td><span class="badge ok">✓</span></td><td><span class="badge warn">Blurry</span></td><td><span class="badge ok">Clear</span></td><td><button class="btn-w">Request doc</button></td></tr>
+              <tr><td><div class="row"><span class="avatar-s">TK</span><span class="b">Tan K.</span></div></td><td>Motorbike</td><td><span class="badge ok">✓</span></td><td><span class="badge ok">✓</span></td><td><span class="badge warn">Pending</span></td><td><button class="btn-w">Hold</button></td></tr>
+              <tr><td><div class="row"><span class="avatar-s">AS</span><span class="b">Arif S.</span></div></td><td>1-Ton Lorry</td><td><span class="badge danger">Expired</span></td><td><span class="badge ok">✓</span></td><td><span class="badge ok">Clear</span></td><td><button class="btn-w">Reject</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== FRAUD ===== -->
+      <section class="page" id="p-fraud">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Open flags</div><div class="val">17</div><div class="delta down">5 high risk</div></div>
+          <div class="kpi"><div class="lab">Blocked at signup</div><div class="val">63</div><div class="delta">this week</div></div>
+          <div class="kpi"><div class="lab">GMV protected</div><div class="val">RM 41.2k</div><div class="delta up">est. saved</div></div>
+          <div class="kpi"><div class="lab">Fraud loss rate</div><div class="val">0.18%</div><div class="delta up">▼ below target</div></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Risk &amp; anomaly queue</h3><span class="badge danger">5 high risk</span></div>
+          <table class="tbl">
+            <thead><tr><th>Entity</th><th>Vector</th><th>Signals</th><th>Risk</th><th>Recommended</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="b">cust #C-7741</td><td>Payment fraud</td><td>Card velocity · geo mismatch</td><td><div class="risk-meter"><i style="width:88%;background:var(--danger)"></i></div></td><td>Hold + step-up auth</td><td><button class="btn-w dark">Review</button></td></tr>
+              <tr><td class="b">drv #D-3120</td><td>GPS spoofing</td><td>Impossible route · self-book</td><td><div class="risk-meter"><i style="width:82%;background:var(--danger)"></i></div></td><td>Suspend payout</td><td><button class="btn-w dark">Review</button></td></tr>
+              <tr><td class="b">cust #C-7705</td><td>Promo abuse</td><td>Referral ring · 6 accounts</td><td><div class="risk-meter"><i style="width:64%;background:var(--warn)"></i></div></td><td>Throttle / revoke</td><td><button class="btn-w">Review</button></td></tr>
+              <tr><td class="b">drv #D-3098</td><td>Fake POD</td><td>Duplicate image · no geo</td><td><div class="risk-meter"><i style="width:71%;background:var(--warn)"></i></div></td><td>Hold payout</td><td><button class="btn-w">Review</button></td></tr>
+              <tr><td class="b">cust #C-7688</td><td>Fake account</td><td>Disposable number · device dup</td><td><div class="risk-meter"><i style="width:55%;background:var(--warn)"></i></div></td><td>Flag at signup</td><td><button class="btn-w">Review</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== ANALYTICS & AI ===== -->
+      <section class="page" id="p-analytics">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Volume MAPE</div><div class="val">14.8%</div><div class="delta up">▼ toward &lt;10% target</div></div>
+          <div class="kpi"><div class="lab">Vehicle-match accuracy</div><div class="val">86.4%</div><div class="delta up">▲ target &gt;92%</div></div>
+          <div class="kpi"><div class="lab">Quote-to-book rate</div><div class="val">41.2%</div><div class="delta up">▲ 2.1pp</div></div>
+          <div class="kpi"><div class="lab">Time-to-quote</div><div class="val">11.3s</div><div class="delta up">under 30s target</div></div>
+        </div>
+        <div class="grid g-2" style="margin-top:16px">
+          <div class="panel">
+            <div class="ph"><h3>AI volume accuracy — estimated vs actual m³</h3><span class="badge info">Data flywheel live</span></div>
+            <div class="pb"><div class="bar-chart" id="mape-chart"></div><div style="height:18px"></div>
+              <div class="tiny muted" style="margin-top:8px">Error falling as customer-confirmation labels accrue. Top item classes graduating to custom detector.</div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>Item-list edit rate</h3></div>
+            <div class="pb">
+              <div class="between" style="padding:6px 0"><div class="b small">Items confirmed unchanged</div><div class="bb" style="color:var(--ok)">71%</div></div>
+              <div class="progress"><i style="width:71%"></i></div>
+              <div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div class="b small">Quantity adjusted</div><div class="bb">19%</div></div>
+              <div class="progress"><i style="width:19%; background:var(--atlas-amber)"></i></div>
+              <div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div class="b small">Item added / removed</div><div class="bb">10%</div></div>
+              <div class="progress"><i style="width:10%; background:var(--atlas-violet)"></i></div>
+              <div class="tiny muted" style="margin-top:12px">Every edit is logged as ground-truth — 2,418 labelled jobs added this week.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Retention &amp; trust</h3></div>
+          <div class="pb grid g-3">
+            <div><div class="lab muted small">Repeat rate (30-day)</div><div class="val bb" style="font-size:26px">38%</div></div>
+            <div><div class="lab muted small">Avg customer rating</div><div class="val bb" style="font-size:26px">4.8 ★</div></div>
+            <div><div class="lab muted small">Dispute rate</div><div class="val bb" style="font-size:26px">1.2%</div></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script src="../js/atlas.js"></script>
+<script>
+  const TOKENS={ _CHART_:'chart',_PIN_:'pin',_TRUCK_:'truck',_CASH_:'cash',_USERS_:'users',_SHIELD_:'shield',_GRID_:'grid',
+    _SEARCH_:'search',_BELL_:'bell',_FILTER_:'filter',_SEND_:'send' };
+  let html=document.body.innerHTML;
+  for(const [k,n] of Object.entries(TOKENS)){ html=html.split(k).join(icon(n)); }
+  document.body.innerHTML=html;
+
+  const TITLES={overview:'Overview',orders:'Live orders',dispatch:'Dispatch',pricing:'Pricing',drivers:'Driver approval',fraud:'Fraud queue',analytics:'Analytics & AI'};
+  function nav(p,el){
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+    document.getElementById('p-'+p).classList.add('active');
+    document.querySelectorAll('.side .nav a').forEach(a=>a.classList.remove('active'));
+    (el||document.querySelector('[data-p='+p+']')).classList.add('active');
+    document.getElementById('page-title').textContent=TITLES[p];
+    window.scrollTo(0,0);
+  }
+  // charts
+  function bars(id,data,labels){
+    const max=Math.max(...data);
+    document.getElementById(id).innerHTML=data.map((v,i)=>`<div class="bar" style="height:${Math.round(v/max*100)}%"><span>${v}</span><small>${labels[i]}</small></div>`).join('');
+  }
+  bars('gmv-chart',[142,158,149,171,165,189,184],['M','T','W','T','F','S','S']);
+  bars('mape-chart',[28,24,21,19,17,15],['Wk1','Wk2','Wk3','Wk4','Wk5','Now']);
+</script>
+</body>
+</html>

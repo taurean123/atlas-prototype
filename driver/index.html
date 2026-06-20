@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1F4D">
+<title>Atlas — Driver & Mover App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/atlas.css">
+<style>
+  .driver-top{ background:var(--grad-navy); color:#fff; padding:8px 18px 22px; }
+  .online-toggle{ display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16); border-radius:16px; padding:14px 16px; }
+  .online-toggle .big-toggle{ width:62px; height:34px; border-radius:18px; background:rgba(255,255,255,.25); position:relative; transition:.25s; flex:0 0 62px; }
+  .online-toggle .big-toggle.on{ background:var(--ok); } .online-toggle .big-toggle i{ position:absolute; top:3px; left:3px; width:28px; height:28px; border-radius:50%; background:#fff; transition:.25s; }
+  .online-toggle .big-toggle.on i{ left:31px; }
+  .stat-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }
+  .stat{ background:rgba(255,255,255,.08); border-radius:13px; padding:12px; text-align:center; }
+  .stat .v{ font-size:19px; font-weight:800; } .stat .l{ font-size:11px; opacity:.7; margin-top:2px; }
+
+  .driver-map{ height:230px; position:relative; }
+  .radar{ position:absolute; left:50%; top:55%; transform:translate(-50%,-50%); width:120px; height:120px; }
+  .radar .ring{ position:absolute; inset:0; border-radius:50%; border:2px solid rgba(26,79,214,.5); animation:radar 2.4s ease-out infinite; }
+  .radar .ring:nth-child(2){ animation-delay:.8s; } .radar .ring:nth-child(3){ animation-delay:1.6s; }
+  @keyframes radar{ 0%{ transform:scale(.3); opacity:.9; } 100%{ transform:scale(1.4); opacity:0; } }
+  .radar .me{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:40px; height:40px; border-radius:50%; background:var(--atlas-navy); display:grid; place-items:center; color:#fff; border:3px solid #fff; box-shadow:var(--shadow); z-index:5; }
+  .radar .me svg{ width:20px; height:20px; }
+
+  .job-timer{ height:6px; border-radius:3px; background:var(--line); overflow:hidden; }
+  .job-timer i{ display:block; height:100%; background:var(--grad-cta); width:100%; }
+  @keyframes countdown{ from{ width:100%; } to{ width:0; } }
+
+  .checklist-item{ display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid var(--line-2); }
+  .check-box{ width:26px; height:26px; border-radius:8px; border:2px solid var(--line); display:grid; place-items:center; color:#fff; flex:0 0 26px; transition:.15s; }
+  .check-box.on{ background:var(--ok); border-color:var(--ok); } .check-box svg{ width:15px; height:15px; }
+  .checklist-item.done .nm{ text-decoration:line-through; color:var(--ink-3); }
+
+  .pod-zone{ aspect-ratio:4/3; border:2px dashed var(--line); border-radius:16px; display:grid; place-items:center; color:var(--atlas-blue); background:var(--surface); }
+  .pod-zone.filled{ border:none; overflow:hidden; }
+  .sig-pad{ height:120px; border:2px dashed var(--line); border-radius:14px; display:grid; place-items:center; color:var(--ink-3); background:var(--surface-2); }
+
+  .earn-bar{ display:flex; align-items:flex-end; gap:8px; height:130px; padding-top:24px; }
+  .earn-bar .b{ flex:1; background:var(--grad-brand); border-radius:6px 6px 0 0; position:relative; }
+  .earn-bar .b small{ position:absolute; bottom:-20px; left:0; right:0; text-align:center; font-size:10px; color:var(--ink-3); }
+  .icon-btn{ width:44px; height:44px; border-radius:13px; background:var(--surface-2); display:grid; place-items:center; color:var(--atlas-blue); }
+  .icon-btn svg{ width:20px; height:20px; }
+</style>
+</head>
+<body>
+<div class="device-stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div id="sb"></div>
+      <div class="app" id="app">
+
+        <!-- =================== HOME / JOBS =================== -->
+        <section class="view active" id="v-home">
+          <div class="driver-top">
+            <div class="between" style="margin-bottom:14px">
+              <div class="row"><div style="width:42px;height:42px;border-radius:50%;background:var(--grad-brand);display:grid;place-items:center;font-weight:800">F</div>
+                <div><div class="b">Faiz Rahman</div><div class="tiny" style="opacity:.75">1-Ton Lorry · WTF 4821</div></div></div>
+              <div class="row" style="gap:5px"><span class="badge ok" style="background:rgba(24,169,87,.2);color:#7DFAB0">_STAR_ 4.9</span></div>
+            </div>
+            <div class="online-toggle">
+              <div class="big-toggle on" id="onlineToggle" onclick="toggleOnline(this)"><i></i></div>
+              <div style="flex:1"><div class="b" id="onlineLabel">You're online</div><div class="tiny" style="opacity:.7" id="onlineSub">Receiving jobs in Mont Kiara zone</div></div>
+              <span class="badge ok" id="onlineBadge" style="background:rgba(24,169,87,.2);color:#7DFAB0">LIVE</span>
+            </div>
+            <div class="stat-row">
+              <div class="stat"><div class="v">RM 248</div><div class="l">Today</div></div>
+              <div class="stat"><div class="v">7</div><div class="l">Jobs</div></div>
+              <div class="stat"><div class="v">92%</div><div class="l">Acceptance</div></div>
+            </div>
+          </div>
+
+          <div class="driver-map map" id="radar-map">
+            <div class="road" style="left:0; top:90px; width:100%; height:12px"></div>
+            <div class="road" style="left:150px; top:0; width:12px; height:100%"></div>
+            <div class="radar"><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+              <div class="me">_TRUCK_</div></div>
+            <div class="pin" style="left:60px; top:60px"><div class="dot" style="background:var(--atlas-amber)"></div></div>
+            <div class="pin" style="left:300px; top:160px"><div class="dot" style="background:var(--atlas-amber)"></div></div>
+          </div>
+
+          <div class="section">
+            <div class="between"><div class="section-title" style="margin:14px 2px 4px">Looking for jobs nearby…</div>
+              <button class="btn btn-sm btn-ghost" onclick="newJob()">Simulate job</button></div>
+            <div class="card card-pad center" style="padding:26px 16px" id="idle-card">
+              <div class="spinner pulse" style="border-color:rgba(26,79,214,.25); border-top-color:var(--atlas-blue); margin:0 auto 12px"></div>
+              <div class="b">Standing by</div><div class="tiny muted">A matched job will pop up automatically. Avg wait in this zone: 3 min.</div>
+            </div>
+
+            <div class="section-title">Recent jobs</div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="ic" style="background:var(--ok-bg);color:var(--ok)">_CHECK_</div><div class="grow"><div class="t">Move · Mont Kiara → Bangsar</div><div class="s">11:20 AM · 1-Ton</div></div><div class="price small">+RM 86.00</div></div>
+              <div class="list-row"><div class="ic" style="background:var(--ok-bg);color:var(--ok)">_CHECK_</div><div class="grow"><div class="t">Send · KLCC drop</div><div class="s">10:05 AM</div></div><div class="price small">+RM 14.50</div></div>
+            </div>
+          </div>
+          _TABBAR_
+        </section>
+
+        <!-- =================== ACTIVE JOB =================== -->
+        <section class="view" id="v-job">
+          <div class="map" id="job-map" style="height:200px">
+            <div style="position:absolute; top:12px; left:12px; z-index:5"><button class="back" onclick="go('v-home')" style="background:#fff">_BACK_</button></div>
+            <div style="position:absolute; top:12px; right:12px; z-index:5"><span class="badge info" style="height:34px;padding:0 12px;box-shadow:var(--shadow)">_NAV_ 2.1 km · 6 min</span></div>
+            <div class="road" style="left:0; top:110px; width:100%; height:14px"></div>
+            <div class="road" style="left:120px; top:0; width:14px; height:100%"></div>
+            <div class="route" style="left:30px; top:150px; width:120px; transform:rotate(-28deg); transform-origin:left"></div>
+            <div class="pin" style="left:30px; top:170px"><div class="dot" style="background:var(--atlas-blue)"></div></div>
+            <div class="pin" style="left:230px; top:60px"><div class="dot" style="background:var(--atlas-amber)"></div></div>
+            <div class="veh" style="left:120px; top:108px">_TRUCK_</div>
+          </div>
+          <div class="section" style="margin-top:-16px; position:relative; z-index:5">
+            <div class="card card-pad">
+              <div class="between"><span class="badge warn">EN ROUTE TO PICKUP</span><span class="bb price">+RM 86.00</span></div>
+              <div class="divider"></div>
+              <div class="route-stack" style="padding-left:4px">
+                <div style="display:flex;gap:12px"><div style="display:flex;flex-direction:column;align-items:center;padding-top:4px"><div style="width:12px;height:12px;border-radius:50%;background:var(--atlas-blue)"></div><div style="width:2px;flex:1;background:var(--line);min-height:26px"></div></div>
+                  <div style="flex:1"><div class="tiny muted bb">PICKUP</div><div class="b">Arcoris Soho, Lvl 12</div><div class="tiny muted">Mont Kiara · lift available</div></div></div>
+                <div style="display:flex;gap:12px"><div style="display:flex;flex-direction:column;align-items:center;padding-top:4px"><div style="width:12px;height:12px;border-radius:50%;background:var(--atlas-amber)"></div></div>
+                  <div style="flex:1"><div class="tiny muted bb">DROP-OFF</div><div class="b">Bangsar Heights, Unit 3A</div><div class="tiny muted">Lvl 3 · stairs · 25 m carry</div></div></div>
+              </div>
+            </div>
+
+            <div class="card card-pad" style="margin-top:12px">
+              <div class="between"><div class="b">Customer</div><div class="row" style="gap:8px"><button class="icon-btn">_CHAT_</button><button class="icon-btn">_PHONE_</button></div></div>
+              <div class="tiny muted" style="margin-top:4px">Naz · move · 2 movers requested · insurance ✓</div>
+            </div>
+
+            <div class="card card-pad" style="margin-top:12px">
+              <div class="between"><div class="b">Item checklist · 6</div><span class="tiny muted" id="check-count">0 / 6 loaded</span></div>
+              <div id="checklist"></div>
+            </div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-dark btn-block btn-lg" onclick="go('v-pod')">Arrived &amp; loaded — start delivery _CHEV_</button>
+          </div>
+        </section>
+
+        <!-- =================== POD =================== -->
+        <section class="view" id="v-pod">
+          <div class="appbar"><button class="back" onclick="go('v-job')">_BACK_</button><h1>Proof of delivery</h1></div>
+          <div class="section">
+            <div class="card card-pad" style="background:var(--ok-bg); display:flex; gap:10px; align-items:center">
+              _CHECK_<div class="small" style="color:var(--ok); font-weight:700; flex:1">Delivered to Bangsar Heights, Unit 3A · 2:38 PM</div>
+            </div>
+            <div class="section-title">Photo of delivered items</div>
+            <div class="pod-zone" id="podZone" onclick="capturePod(this)">_CAMERA_</div>
+            <div class="tiny muted center" style="margin-top:8px">Tap to capture · geo + timestamp auto-attached</div>
+
+            <div class="section-title">Customer signature</div>
+            <div class="sig-pad" onclick="this.innerHTML='<svg viewBox=&quot;0 0 200 60&quot; style=&quot;width:160px&quot;><path d=&quot;M10 40 Q30 10 50 35 T90 30 Q110 50 130 25 T180 35&quot; fill=&quot;none&quot; stroke=&quot;%231A4FD6&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot;/></svg>'">Sign here</div>
+
+            <div class="section-title">Condition notes</div>
+            <div class="field"><input placeholder="All items delivered in good condition"></div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-primary btn-block btn-lg" onclick="completeJob()">Complete job _CHECK_</button>
+          </div>
+        </section>
+
+        <!-- =================== EARNINGS =================== -->
+        <section class="view" id="v-earnings">
+          <div class="appbar"><h1>Earnings</h1></div>
+          <div class="section">
+            <div class="vol-card" style="background:var(--grad-navy); color:#fff; border-radius:18px; padding:18px">
+              <div class="tiny" style="opacity:.75">THIS WEEK</div>
+              <div style="font-size:34px;font-weight:800;letter-spacing:-1px">RM 1,486.50</div>
+              <div class="tiny" style="opacity:.8; margin-top:4px">▲ 12% vs last week · 38 jobs</div>
+            </div>
+            <div class="card card-pad" style="margin-top:14px">
+              <div class="b" style="margin-bottom:6px">Daily earnings</div>
+              <div class="earn-bar">
+                <div class="b" style="height:55%"><small>Mon</small></div>
+                <div class="b" style="height:72%"><small>Tue</small></div>
+                <div class="b" style="height:48%"><small>Wed</small></div>
+                <div class="b" style="height:90%"><small>Thu</small></div>
+                <div class="b" style="height:78%"><small>Fri</small></div>
+                <div class="b" style="height:100%"><small>Sat</small></div>
+                <div class="b" style="height:35%; opacity:.4"><small>Sun</small></div>
+              </div>
+            </div>
+            <div class="section-title">Breakdown</div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="grow"><div class="t">Base fares</div></div><div class="b">RM 1,180.00</div></div>
+              <div class="list-row"><div class="grow"><div class="t">Move add-ons (manpower)</div></div><div class="b">RM 214.00</div></div>
+              <div class="list-row"><div class="grow"><div class="t">Incentives &amp; bonuses</div><div class="s">Peak-hour + streak bonus</div></div><div class="b" style="color:var(--ok)">+RM 92.50</div></div>
+            </div>
+            <div class="section-title">Vehicle utilisation</div>
+            <div class="card card-pad"><div class="between"><div class="small b">Active / online time</div><div class="b">81%</div></div>
+              <div class="progress" style="margin-top:8px"><i style="width:81%"></i></div>
+              <div class="tiny muted" style="margin-top:6px">Idle time down 14% — Atlas batching is matching you faster.</div></div>
+          </div>
+          _TABBAR_
+        </section>
+
+        <!-- =================== WALLET =================== -->
+        <section class="view" id="v-wallet">
+          <div class="appbar"><h1>Wallet</h1></div>
+          <div class="section">
+            <div class="vol-card" style="background:var(--grad-brand); color:#fff; border-radius:18px; padding:18px">
+              <div class="tiny" style="opacity:.8">AVAILABLE TO PAY OUT</div>
+              <div style="font-size:34px;font-weight:800;letter-spacing:-1px">RM 1,486.50</div>
+              <button class="btn btn-sm" style="margin-top:14px; background:#fff; color:var(--atlas-blue)" onclick="toast('Payout requested — arrives in 1 hour')">_CASH_ Cash out now</button>
+            </div>
+            <div class="section-title">Payout history</div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="ic" style="background:var(--ok-bg);color:var(--ok)">_CASH_</div><div class="grow"><div class="t">Payout to Maybank ···· 7781</div><div class="s">13 Jun · Completed</div></div><div class="b">RM 1,320.00</div></div>
+              <div class="list-row"><div class="ic" style="background:var(--ok-bg);color:var(--ok)">_CASH_</div><div class="grow"><div class="t">Payout to Maybank ···· 7781</div><div class="s">6 Jun · Completed</div></div><div class="b">RM 1,205.50</div></div>
+            </div>
+            <button class="btn btn-block" style="margin-top:14px">Download statement _DOWNLOAD_</button>
+          </div>
+          _TABBAR_
+        </section>
+
+        <!-- =================== PROFILE / STANDING =================== -->
+        <section class="view" id="v-profile">
+          <div class="appbar"><h1>Standing</h1></div>
+          <div class="section">
+            <div class="card card-pad" style="display:flex; gap:14px; align-items:center">
+              <div style="width:58px;height:58px;border-radius:50%;background:var(--grad-brand);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:800">F</div>
+              <div style="flex:1"><div class="bb" style="font-size:18px">Faiz Rahman</div><div class="tiny muted">Driver partner since 2024</div>
+                <div class="row" style="gap:4px;margin-top:4px"><span class="badge ok">_STAR_ 4.9</span><span class="badge violet">Priority tier</span></div></div>
+            </div>
+            <div class="section-title">Performance</div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="grow"><div class="t">Acceptance rate</div></div><div class="b">92%</div></div>
+              <div class="list-row"><div class="grow"><div class="t">Completion rate</div></div><div class="b">99%</div></div>
+              <div class="list-row"><div class="grow"><div class="t">On-time POD</div></div><div class="b">97%</div></div>
+            </div>
+            <div class="section-title">Documents &amp; vehicle</div>
+            <div class="card" style="overflow:hidden">
+              <div class="list-row"><div class="ic" style="background:var(--surface-2);color:var(--atlas-blue)">_DOC_</div><div class="grow"><div class="t">Driving licence</div><div class="s">Verified · exp 2028</div></div><span class="badge ok">✓</span></div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2);color:var(--atlas-teal)">_TRUCK_</div><div class="grow"><div class="t">Vehicle registration</div><div class="s">1-Ton Lorry · WTF 4821</div></div><span class="badge ok">✓</span></div>
+              <div class="list-row"><div class="ic" style="background:var(--surface-2);color:var(--atlas-amber)">_SHIELD_</div><div class="grow"><div class="t">Insurance</div><div class="s">Renews 12 Aug</div></div><span class="badge warn">Soon</span></div>
+            </div>
+            <button class="btn btn-block" style="margin-top:16px">Priority listing &amp; boosts _CHEV_</button>
+          </div>
+          _TABBAR_
+        </section>
+
+        <!-- incoming job sheet -->
+        <div class="sheet-scrim" id="job-scrim"></div>
+        <div class="sheet" id="jobsheet">
+          <div class="grabber"></div>
+          <div class="between"><span class="badge warn">NEW MOVE JOB</span><span class="bb price" style="font-size:22px">+RM 86.00</span></div>
+          <div class="job-timer" style="margin:12px 0 16px"><i id="job-timer-bar"></i></div>
+          <div class="card card-pad" style="background:var(--surface-2)">
+            <div class="route-stack" style="padding-left:4px">
+              <div style="display:flex;gap:12px"><div style="display:flex;flex-direction:column;align-items:center;padding-top:3px"><div style="width:11px;height:11px;border-radius:50%;background:var(--atlas-blue)"></div><div style="width:2px;flex:1;background:var(--line);min-height:22px"></div></div>
+                <div style="flex:1"><div class="b small">Arcoris Soho, Mont Kiara</div><div class="tiny muted">2.1 km away · lift</div></div></div>
+              <div style="display:flex;gap:12px"><div style="display:flex;flex-direction:column;align-items:center;padding-top:3px"><div style="width:11px;height:11px;border-radius:50%;background:var(--atlas-amber)"></div></div>
+                <div style="flex:1"><div class="b small">Bangsar Heights, Unit 3A</div><div class="tiny muted">8.4 km trip · stairs</div></div></div>
+            </div>
+          </div>
+          <div class="row" style="gap:8px; margin:14px 0 4px">
+            <span class="pill">_BOX_ 1-Ton load</span><span class="pill">_USERS_ 2 movers</span><span class="pill">_SHIELD_ Insured</span>
+          </div>
+          <div class="row" style="gap:10px; margin-top:16px">
+            <button class="btn btn-block" style="flex:1" onclick="declineJob()">Decline</button>
+            <button class="btn btn-cta btn-block btn-lg" style="flex:2" onclick="acceptJob()">Accept job</button>
+          </div>
+          <div class="spacer-12"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/atlas.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

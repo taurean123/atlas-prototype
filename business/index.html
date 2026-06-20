@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas — Business / Enterprise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/atlas.css">
+<style>
+  .side{ background:linear-gradient(180deg,#1a1146,#2a1d6b); }
+  .fleet-card{ display:flex; gap:12px; align-items:center; padding:14px; border:1px solid var(--line); border-radius:12px; }
+  .fleet-card .fic{ width:46px; height:46px; border-radius:11px; background:var(--surface-2); display:grid; place-items:center; color:var(--atlas-violet); }
+  .fleet-card .fic svg{ width:24px; height:24px; }
+  .dot-status{ width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .upload-zone{ border:2px dashed var(--line); border-radius:14px; padding:26px; text-align:center; color:var(--atlas-violet); cursor:pointer; }
+  .upload-zone:hover{ background:var(--surface-2); }
+  .code-box{ background:#0e1430; color:#cdd6ff; border-radius:12px; padding:16px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; line-height:1.6; overflow-x:auto; }
+  .code-box .k{ color:#7FA8FF; } .code-box .s{ color:#7DE2B0; } .code-box .c{ color:#6b7baa; }
+  .toggle-w{ width:46px; height:26px; border-radius:14px; background:var(--line); position:relative; cursor:pointer; transition:.2s; }
+  .toggle-w.on{ background:var(--atlas-violet);} .toggle-w i{ position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s;}
+  .toggle-w.on i{ left:23px; }
+  .kpi .val{ background:linear-gradient(120deg,#6B4DE6,#1A4FD6); -webkit-background-clip:text; background-clip:text; color:transparent; }
+</style>
+</head>
+<body>
+<div class="dash">
+  <aside class="side">
+    <div class="atlas-logo"><span class="mark" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span><span class="word">Atlas <span style="font-weight:600;font-size:13px;opacity:.6">Business</span></span></div>
+    <nav class="nav">
+      <div class="grp">Workspace</div>
+      <a class="active" data-p="overview" onclick="nav('overview',this)">_CHART_ Overview</a>
+      <a data-p="book" onclick="nav('book',this)">_BOX_ Bulk booking</a>
+      <a data-p="fleet" onclick="nav('fleet',this)">_FLEET_ Fleet</a>
+      <a data-p="branches" onclick="nav('branches',this)">_PIN_ Branches</a>
+      <div class="grp">Finance</div>
+      <a data-p="invoices" onclick="nav('invoices',this)">_DOC_ Invoicing</a>
+      <a data-p="analytics" onclick="nav('analytics',this)">_GRID_ Analytics</a>
+      <div class="grp">Developer</div>
+      <a data-p="api" onclick="nav('api',this)">_CODE_ API &amp; integrations</a>
+    </nav>
+    <div class="badge-pro" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6)"><div class="t">Enterprise plan</div><div class="s">Unlimited bookings · API · priority support</div></div>
+    <div style="margin-top:18px"><a href="../index.html" style="color:rgba(255,255,255,.6);font-size:13px;font-weight:600">← Back to launcher</a></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h2 id="page-title">Overview</h2>
+      <div class="spacer" style="flex:1"></div>
+      <span class="b small muted">Amnet Logistics Sdn Bhd</span>
+      <button class="btn-w" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6);color:#fff;border:none">_PLUS_ New booking</button>
+      <div class="av" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6)">AL</div>
+    </div>
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <section class="page active" id="p-overview">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Spend this month</div><div class="val">RM 86,420</div><div class="delta up">▲ 6% vs last</div></div>
+          <div class="kpi"><div class="lab">Deliveries</div><div class="val">3,184</div><div class="delta up">▲ 11%</div></div>
+          <div class="kpi"><div class="lab">On-time rate</div><div class="val">96.8%</div><div class="delta up">▲ 1.2pp</div></div>
+          <div class="kpi"><div class="lab">Cost per delivery</div><div class="val">RM 27.14</div><div class="delta up">▼ 4%</div></div>
+        </div>
+        <div class="grid g-2" style="margin-top:16px">
+          <div class="panel">
+            <div class="ph"><h3>Delivery spend — last 7 days</h3></div>
+            <div class="pb"><div class="bar-chart" id="spend-chart"></div><div style="height:18px"></div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>This month at a glance</h3></div>
+            <div class="pb">
+              <div class="between" style="padding:7px 0"><div class="b small">Scheduled recurring runs</div><div class="bb">42 / week</div></div><div class="divider"></div>
+              <div class="between" style="padding:7px 0"><div class="b small">Active branches</div><div class="bb">6</div></div><div class="divider"></div>
+              <div class="between" style="padding:7px 0"><div class="b small">Outstanding invoices</div><div class="bb" style="color:var(--warn)">RM 12,840</div></div><div class="divider"></div>
+              <div class="between" style="padding:7px 0"><div class="b small">API calls (month)</div><div class="bb">184,209</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Recent bookings</h3><button class="btn-w">View all</button></div>
+          <table class="tbl">
+            <thead><tr><th>Ref</th><th>Type</th><th>Branch</th><th>Recipient</th><th>Status</th><th>Cost</th></tr></thead>
+            <tbody>
+              <tr><td class="b">#B-5521</td><td>Send · bulk (40 stops)</td><td>KL HQ</td><td>Mixed</td><td><span class="badge info">In progress</span></td><td>RM 940.00</td></tr>
+              <tr><td class="b">#B-5518</td><td>Move · office</td><td>Penang</td><td>New office</td><td><span class="badge ok">Completed</span></td><td>RM 3,120.00</td></tr>
+              <tr><td class="b">#B-5515</td><td>Send · recurring</td><td>Johor</td><td>Retail chain</td><td><span class="badge ok">Completed</span></td><td>RM 612.00</td></tr>
+              <tr><td class="b">#B-5511</td><td>Transport</td><td>KL HQ</td><td>Warehouse</td><td><span class="badge ok">Completed</span></td><td>RM 1,480.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BULK BOOKING -->
+      <section class="page" id="p-book">
+        <div class="grid g-2">
+          <div class="panel">
+            <div class="ph"><h3>Bulk booking — upload</h3></div>
+            <div class="pb">
+              <div class="upload-zone" onclick="this.innerHTML='<div class=&quot;b&quot;>✓ deliveries_jun20.csv — 40 rows parsed</div><div class=&quot;tiny muted&quot;>38 valid · 2 need attention</div>'">
+                _DOWNLOAD_<div class="b" style="margin-top:8px">Drop a CSV / Excel of deliveries</div><div class="tiny muted">Columns: recipient, address, contact, vehicle, window</div></div>
+              <div class="row" style="gap:10px; margin-top:14px"><button class="btn-w">Download template</button><button class="btn-w" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6);color:#fff;border:none" onclick="toast('40 deliveries queued for dispatch')">Schedule batch</button></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>Recurring schedules</h3><button class="btn-w">_PLUS_ Add</button></div>
+            <table class="tbl">
+              <tbody>
+                <tr><td><div class="b">Daily retail restock</div><div class="tiny muted">Mon–Sat · 8 AM · 12 stops</div></td><td><span class="badge ok">Active</span></td></tr>
+                <tr><td><div class="b">Weekly warehouse run</div><div class="tiny muted">Every Mon · 3-Ton</div></td><td><span class="badge ok">Active</span></td></tr>
+                <tr><td><div class="b">Month-end document courier</div><div class="tiny muted">Last Fri · bike</div></td><td><span class="badge warn">Paused</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Batch preview — deliveries_jun20.csv</h3><span class="badge warn">2 need attention</span></div>
+          <table class="tbl">
+            <thead><tr><th>#</th><th>Recipient</th><th>Address</th><th>Vehicle</th><th>Window</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="b">Mid Valley store</td><td>Lingkaran Syed Putra</td><td>Van</td><td>9–11 AM</td><td><span class="badge ok">Ready</span></td></tr>
+              <tr><td>2</td><td class="b">Pavilion KL</td><td>Jln Bukit Bintang</td><td>Bike</td><td>10–12 PM</td><td><span class="badge ok">Ready</span></td></tr>
+              <tr><td>3</td><td class="b">Sunway Pyramid</td><td>—</td><td>Van</td><td>1–3 PM</td><td><span class="badge danger">No address</span></td></tr>
+              <tr><td>4</td><td class="b">IOI City Mall</td><td>Putrajaya</td><td>1-Ton</td><td>2–4 PM</td><td><span class="badge warn">Verify contact</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- FLEET -->
+      <section class="page" id="p-fleet">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Fleet vehicles</div><div class="val">24</div><div class="delta">8 owned · 16 marketplace</div></div>
+          <div class="kpi"><div class="lab">On the road now</div><div class="val">17</div><div class="delta up">71% utilisation</div></div>
+          <div class="kpi"><div class="lab">Idle</div><div class="val">5</div><div class="delta">available</div></div>
+          <div class="kpi"><div class="lab">Maintenance</div><div class="val">2</div><div class="delta down">scheduled</div></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Fleet status</h3><button class="btn-w">_FILTER_ Filter</button></div>
+          <div class="pb grid g-2">
+            <div class="fleet-card"><div class="fic">_TRUCK_</div><div style="flex:1"><div class="b">WTF 4821 · 1-Ton</div><div class="tiny muted">Faiz R. · Mont Kiara → Bangsar</div></div><div><span class="dot-status" style="background:var(--ok)"></span><span class="tiny b">On job</span></div></div>
+            <div class="fleet-card"><div class="fic">_TRUCK_</div><div style="flex:1"><div class="b">WPK 1180 · 3-Ton</div><div class="tiny muted">Kumar V. · interstate KL→Penang</div></div><div><span class="dot-status" style="background:var(--ok)"></span><span class="tiny b">On job</span></div></div>
+            <div class="fleet-card"><div class="fic">_BOX_</div><div style="flex:1"><div class="b">VBN 7763 · Van</div><div class="tiny muted">Idle · Shah Alam depot</div></div><div><span class="dot-status" style="background:var(--ink-3)"></span><span class="tiny b">Idle</span></div></div>
+            <div class="fleet-card"><div class="fic">_TRUCK_</div><div style="flex:1"><div class="b">WXY 2204 · 5-Ton</div><div class="tiny muted">Service due · 2 days</div></div><div><span class="dot-status" style="background:var(--warn)"></span><span class="tiny b">Maint.</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BRANCHES -->
+      <section class="page" id="p-branches">
+        <div class="panel">
+          <div class="ph"><h3>Branch operations</h3><button class="btn-w" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6);color:#fff;border:none">_PLUS_ Add branch</button></div>
+          <table class="tbl">
+            <thead><tr><th>Branch</th><th>Deliveries (mo)</th><th>Spend</th><th>On-time</th><th>Admins</th></tr></thead>
+            <tbody>
+              <tr><td class="b">KL HQ</td><td>1,420</td><td>RM 38,200</td><td><span class="badge ok">97%</span></td><td>4</td></tr>
+              <tr><td class="b">Penang</td><td>640</td><td>RM 17,800</td><td><span class="badge ok">96%</span></td><td>2</td></tr>
+              <tr><td class="b">Johor Bahru</td><td>512</td><td>RM 13,640</td><td><span class="badge ok">95%</span></td><td>2</td></tr>
+              <tr><td class="b">Shah Alam</td><td>388</td><td>RM 9,920</td><td><span class="badge warn">92%</span></td><td>1</td></tr>
+              <tr><td class="b">Ipoh</td><td>224</td><td>RM 6,860</td><td><span class="badge ok">96%</span></td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Address books &amp; recipients</h3></div>
+          <div class="pb grid g-3">
+            <div><div class="lab muted small">Saved recipients</div><div class="val bb" style="font-size:26px">1,284</div></div>
+            <div><div class="lab muted small">Saved addresses</div><div class="val bb" style="font-size:26px">3,602</div></div>
+            <div><div class="lab muted small">Team members</div><div class="val bb" style="font-size:26px">10</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INVOICING -->
+      <section class="page" id="p-invoices">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Outstanding</div><div class="val">RM 12,840</div><div class="delta down">2 invoices</div></div>
+          <div class="kpi"><div class="lab">Paid (month)</div><div class="val">RM 73,580</div><div class="delta up">on time</div></div>
+          <div class="kpi"><div class="lab">Avg payment terms</div><div class="val">NET 30</div><div class="delta">consolidated</div></div>
+          <div class="kpi"><div class="lab">Next invoice</div><div class="val">30 Jun</div><div class="delta">auto-generated</div></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Invoices</h3><div class="row"><button class="btn-w">_DOWNLOAD_ Export</button><button class="btn-w" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6);color:#fff;border:none" onclick="toast('Invoice generated')">Generate now</button></div></div>
+          <table class="tbl">
+            <thead><tr><th>Invoice</th><th>Period</th><th>Branch</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td class="b">INV-2026-061</td><td>1–15 Jun</td><td>Consolidated</td><td>RM 41,200</td><td><span class="badge ok">Paid</span></td><td><button class="btn-w">_DOC_ PDF</button></td></tr>
+              <tr><td class="b">INV-2026-058</td><td>16–31 May</td><td>Consolidated</td><td>RM 38,640</td><td><span class="badge ok">Paid</span></td><td><button class="btn-w">_DOC_ PDF</button></td></tr>
+              <tr><td class="b">INV-2026-055</td><td>1–15 May</td><td>KL HQ</td><td>RM 9,820</td><td><span class="badge warn">Due 5 Jul</span></td><td><button class="btn-w">_DOC_ PDF</button></td></tr>
+              <tr><td class="b">INV-2026-052</td><td>1–15 May</td><td>Penang</td><td>RM 3,020</td><td><span class="badge danger">Overdue</span></td><td><button class="btn-w">_DOC_ PDF</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section class="page" id="p-analytics">
+        <div class="grid g-2">
+          <div class="panel">
+            <div class="ph"><h3>Delivery volume by line</h3></div>
+            <div class="pb"><div class="bar-chart" id="vol-chart"></div><div style="height:18px"></div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>Cost breakdown</h3></div>
+            <div class="pb">
+              <div class="between" style="padding:6px 0"><div class="b small">Send (courier)</div><div class="bb">RM 31,200</div></div><div class="progress"><i style="width:48%"></i></div><div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div class="b small">Move (relocation)</div><div class="bb">RM 28,900</div></div><div class="progress"><i style="width:42%; background:var(--atlas-amber)"></i></div><div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div class="b small">Transport</div><div class="bb">RM 18,320</div></div><div class="progress"><i style="width:28%; background:var(--atlas-teal)"></i></div><div class="divider"></div>
+              <div class="between" style="padding:6px 0"><div class="b small">Add-ons &amp; insurance</div><div class="bb">RM 8,000</div></div><div class="progress"><i style="width:14%; background:var(--atlas-violet)"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Performance by branch</h3><button class="btn-w">_DOWNLOAD_ Cost report</button></div>
+          <table class="tbl">
+            <thead><tr><th>Branch</th><th>Deliveries</th><th>Avg cost</th><th>On-time</th><th>Trend</th></tr></thead>
+            <tbody>
+              <tr><td class="b">KL HQ</td><td>1,420</td><td>RM 26.90</td><td>97%</td><td><span class="badge ok">▲ improving</span></td></tr>
+              <tr><td class="b">Penang</td><td>640</td><td>RM 27.80</td><td>96%</td><td><span class="badge ok">▲ stable</span></td></tr>
+              <tr><td class="b">Shah Alam</td><td>388</td><td>RM 25.60</td><td>92%</td><td><span class="badge warn">▼ watch</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- API -->
+      <section class="page" id="p-api">
+        <div class="grid g-2">
+          <div class="panel">
+            <div class="ph"><h3>API keys</h3><button class="btn-w" style="background:linear-gradient(135deg,#6B4DE6,#1A4FD6);color:#fff;border:none" onclick="toast('New key generated')">_PLUS_ New key</button></div>
+            <div class="pb">
+              <div class="between" style="padding:8px 0"><div><div class="b small">Production</div><div class="tiny muted">atlas_live_••••••••4f9c</div></div><span class="badge ok">Active</span></div><div class="divider"></div>
+              <div class="between" style="padding:8px 0"><div><div class="b small">Sandbox</div><div class="tiny muted">atlas_test_••••••••a1b2</div></div><span class="badge info">Test</span></div>
+              <div class="divider"></div>
+              <div class="b small" style="margin:6px 0">Webhooks</div>
+              <div class="between" style="padding:6px 0"><div class="tiny">order.status_changed</div><div class="toggle-w on" onclick="this.classList.toggle('on')"><i></i></div></div>
+              <div class="between" style="padding:6px 0"><div class="tiny">delivery.completed (POD)</div><div class="toggle-w on" onclick="this.classList.toggle('on')"><i></i></div></div>
+              <div class="between" style="padding:6px 0"><div class="tiny">invoice.generated</div><div class="toggle-w" onclick="this.classList.toggle('on')"><i></i></div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><h3>Create a booking — quickstart</h3></div>
+            <div class="pb">
+              <div class="code-box"><span class="c"># Create an instant Send booking</span><br>
+POST https://api.atlas.my/v1/bookings<br>
+<span class="k">Authorization</span>: Bearer atlas_live_…<br><br>
+{<br>
+&nbsp;&nbsp;<span class="k">"line"</span>: <span class="s">"send"</span>,<br>
+&nbsp;&nbsp;<span class="k">"vehicle"</span>: <span class="s">"van"</span>,<br>
+&nbsp;&nbsp;<span class="k">"pickup"</span>: <span class="s">"KL HQ"</span>,<br>
+&nbsp;&nbsp;<span class="k">"stops"</span>: [<span class="s">"Mid Valley"</span>, <span class="s">"Pavilion"</span>],<br>
+&nbsp;&nbsp;<span class="k">"webhook"</span>: <span class="s">"https://erp.amnet…"</span><br>
+}</div>
+              <div class="tiny muted" style="margin-top:12px">Full reference: booking, AI quote, tracking, POD, invoicing endpoints. SDKs for Node, Python, PHP.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="ph"><h3>Integrations</h3></div>
+          <div class="pb grid g-3">
+            <div class="fleet-card"><div class="fic">_DOC_</div><div style="flex:1"><div class="b">SAP / ERP</div><div class="tiny muted">Connected</div></div><span class="badge ok">✓</span></div>
+            <div class="fleet-card"><div class="fic">_BOX_</div><div style="flex:1"><div class="b">Shopify</div><div class="tiny muted">Auto-fulfil orders</div></div><span class="badge ok">✓</span></div>
+            <div class="fleet-card"><div class="fic">_CHART_</div><div style="flex:1"><div class="b">Power BI</div><div class="tiny muted">Not connected</div></div><button class="btn-w">Connect</button></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script src="../js/atlas.js"></script>
+<script>
+  const TOKENS={ _CHART_:'chart',_BOX_:'box',_FLEET_:'fleet',_PIN_:'pin',_DOC_:'doc',_GRID_:'grid',_CODE_:'code',
+    _PLUS_:'plus',_FILTER_:'filter',_DOWNLOAD_:'download',_TRUCK_:'truck' };
+  let html=document.body.innerHTML;
+  for(const [k,n] of Object.entries(TOKENS)){ html=html.split(k).join(icon(n)); }
+  document.body.innerHTML=html;
+
+  const TITLES={overview:'Overview',book:'Bulk booking',fleet:'Fleet',branches:'Branches',invoices:'Invoicing',analytics:'Analytics',api:'API & integrations'};
+  function nav(p,el){
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+    document.getElementById('p-'+p).classList.add('active');
+    document.querySelectorAll('.side .nav a').forEach(a=>a.classList.remove('active'));
+    (el||document.querySelector('[data-p='+p+']')).classList.add('active');
+    document.getElementById('page-title').textContent=TITLES[p];
+    window.scrollTo(0,0);
+  }
+  function bars(id,data,labels){
+    const max=Math.max(...data);
+    document.getElementById(id).innerHTML=data.map((v,i)=>`<div class="bar" style="height:${Math.round(v/max*100)}%; background:linear-gradient(135deg,#6B4DE6,#1A4FD6)"><span>${v}</span><small>${labels[i]}</small></div>`).join('');
+  }
+  bars('spend-chart',[11.2,12.8,10.9,13.4,12.1,14.0,12.0],['M','T','W','T','F','S','S']);
+  bars('vol-chart',[1480,940,620,1180,1320,1620],['Jan','Feb','Mar','Apr','May','Jun']);
+</script>
+</body>
+</html>

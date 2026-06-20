@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1F4D">
+<title>Atlas — Logistics Super-App · Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/atlas.css">
+<style>
+  body{ background:
+      radial-gradient(1100px 500px at 12% -5%, rgba(46,107,255,.22), transparent 55%),
+      radial-gradient(1000px 600px at 100% 0%, rgba(107,77,230,.20), transparent 55%),
+      var(--grad-navy); color:#fff; min-height:100vh; }
+  .hub{ max-width:1080px; margin:0 auto; padding:56px 24px 80px; }
+  .hero-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .tag{ display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16);
+    padding:7px 14px; border-radius:999px; font-size:13px; font-weight:700; }
+  .tag .d{ width:8px; height:8px; border-radius:50%; background:var(--atlas-amber); box-shadow:0 0 0 4px rgba(255,158,44,.25); }
+  h1.big{ font-size:46px; font-weight:800; letter-spacing:-1.5px; margin:30px 0 12px; line-height:1.05; }
+  h1.big span{ background:linear-gradient(120deg,#7FA8FF,#C9B6FF); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lede{ font-size:18px; color:rgba(255,255,255,.78); max-width:680px; line-height:1.5; }
+  .surfaces{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:40px; }
+  .surface{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:22px; padding:26px;
+    display:flex; flex-direction:column; gap:14px; transition:.2s; position:relative; overflow:hidden; }
+  .surface:hover{ background:rgba(255,255,255,.1); transform:translateY(-3px); border-color:rgba(255,255,255,.25); }
+  .surface .ic{ width:54px; height:54px; border-radius:15px; display:grid; place-items:center; }
+  .surface .ic svg{ width:28px; height:28px; color:#fff; }
+  .surface h3{ font-size:21px; font-weight:800; }
+  .surface p{ color:rgba(255,255,255,.7); font-size:14.5px; line-height:1.5; flex:1; }
+  .surface .feats{ display:flex; flex-wrap:wrap; gap:7px; }
+  .surface .feats span{ font-size:12px; background:rgba(255,255,255,.1); padding:4px 10px; border-radius:7px; font-weight:600; }
+  .surface .open{ display:inline-flex; align-items:center; gap:7px; font-weight:800; font-size:15px; margin-top:4px; }
+  .surface .open svg{ width:18px; height:18px; }
+  .surface .corner{ position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; opacity:.18; filter:blur(6px); }
+  .ic.c{ background:var(--grad-brand);} .corner.c{ background:#2E6BFF; }
+  .ic.d{ background:linear-gradient(135deg,#18B6A6,#12306E);} .corner.d{ background:#18B6A6; }
+  .ic.a{ background:linear-gradient(135deg,#FF9E2C,#FF7A1A);} .corner.a{ background:#FF9E2C; }
+  .ic.b{ background:linear-gradient(135deg,#6B4DE6,#1A4FD6);} .corner.b{ background:#6B4DE6; }
+  .badge-soft{ font-size:11px; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
+    background:var(--grad-cta); padding:4px 9px; border-radius:7px; color:#fff; }
+  .meta{ margin-top:46px; display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .meta .m{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:18px; }
+  .meta .m .v{ font-size:24px; font-weight:800; letter-spacing:-.5px; }
+  .meta .m .l{ font-size:12.5px; color:rgba(255,255,255,.65); margin-top:3px; }
+  .foot{ margin-top:48px; color:rgba(255,255,255,.55); font-size:13px; line-height:1.7; }
+  @media(max-width:760px){ .surfaces,.meta{ grid-template-columns:1fr; } h1.big{ font-size:34px; } .meta{ grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<div class="hub">
+  <div class="hero-top">
+    <div class="atlas-logo">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
+      <span class="word"><b>Atlas</b></span>
+    </div>
+    <span class="tag"><span class="d"></span> Interactive Prototype · Phase 1</span>
+  </div>
+
+  <h1 class="big">One app to move <span>anything.</span><br>From an envelope to an apartment.</h1>
+  <p class="lede">Atlas merges instant courier, on-demand moving, and interstate transport into a single marketplace — with an <b style="color:#fff">AI Quotation Engine</b> that turns photos of your belongings into a price in seconds. Pick a surface below to walk through the experience.</p>
+
+  <div class="surfaces">
+    <a class="surface" href="customer/index.html">
+      <div class="corner c"></div>
+      <div class="ic c">_SEND_</div>
+      <h3>Customer App <span class="badge-soft">Hero demo</span></h3>
+      <p>Book Send, Move, or Transport. The Move flow shows the AI Quotation Engine: scan your home, get an instant item list, volume, recommended vehicle, and price.</p>
+      <div class="feats"><span>AI Quote</span><span>Live tracking</span><span>3 service lines</span><span>Add-ons</span></div>
+      <span class="open">Open customer app _CHEV_</span>
+    </a>
+
+    <a class="surface" href="driver/index.html">
+      <div class="corner d"></div>
+      <div class="ic d">_TRUCK_</div>
+      <h3>Driver &amp; Mover App</h3>
+      <p>Go online, receive a matched job with an accept timer, navigate the optimised route, run the item checklist, capture proof of delivery, and watch earnings land in the wallet.</p>
+      <div class="feats"><span>Job matching</span><span>Navigation</span><span>POD</span><span>Wallet</span></div>
+      <span class="open">Open driver app _CHEV_</span>
+    </a>
+
+    <a class="surface" href="admin/index.html">
+      <div class="corner a"></div>
+      <div class="ic a">_GRID_</div>
+      <h3>Admin Dashboard</h3>
+      <p>Operations control room: live order map, pricing &amp; surge rules, driver approval queue, fraud detection queue, and the marketplace + AI-accuracy analytics.</p>
+      <div class="feats"><span>Order map</span><span>Pricing</span><span>Fraud queue</span><span>Analytics</span></div>
+      <span class="open">Open admin dashboard _CHEV_</span>
+    </a>
+
+    <a class="surface" href="business/index.html">
+      <div class="corner b"></div>
+      <div class="ic b">_FLEET_</div>
+      <h3>Business / Enterprise</h3>
+      <p>The SaaS tier for SMEs: fleet management, bulk &amp; scheduled bookings, consolidated invoicing, delivery analytics, multi-branch, and API access.</p>
+      <div class="feats"><span>Fleet</span><span>Bulk booking</span><span>Invoicing</span><span>API</span></div>
+      <span class="open">Open business dashboard _CHEV_</span>
+    </a>
+  </div>
+
+  <div class="meta">
+    <div class="m"><div class="v">&lt; 30s</div><div class="l">Photo → quote latency target</div></div>
+    <div class="m"><div class="v">3-in-1</div><div class="l">Send · Move · Transport</div></div>
+    <div class="m"><div class="v">🇲🇾 Malaysia</div><div class="l">Launch market · MYR · PDPA</div></div>
+    <div class="m"><div class="v">4 surfaces</div><div class="l">Customer · Driver · Admin · Business</div></div>
+  </div>
+
+  <p class="foot">
+    <b style="color:rgba(255,255,255,.8)">Prototype notes:</b> this is a clickable demo for stakeholder review — no live backend, AI quotes and tracking are simulated with realistic demo data.
+    Best viewed on a phone or in a mobile browser frame. Reference models: Lalamove (instant delivery) · TheLorry (moving &amp; relocation).<br>
+    We Are Amnet · Operations · Project Atlas v1.0
+  </p>
+</div>
+
+<script src="js/atlas.js"></script>
+<script>
+  document.querySelectorAll('.ic').forEach(el=>{
+    el.innerHTML = el.innerHTML
+      .replace('_SEND_', icon('send')).replace('_TRUCK_', icon('truck'))
+      .replace('_GRID_', icon('grid')).replace('_FLEET_', icon('fleet'));
+  });
+  document.querySelectorAll('.open').forEach(el=>{ el.innerHTML = el.innerHTML.replace('_CHEV_', icon('chev')); });
+</script>
+</body>
+</html>
